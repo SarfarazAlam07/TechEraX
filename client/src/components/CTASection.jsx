@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CTASection = () => {
+  const Navigate = useNavigate();
   return (
     <section className="py-20 px-4 md:px-12 bg-white relative">
       
@@ -70,7 +72,7 @@ const CTASection = () => {
             whileTap={{ scale: 0.95 }}
             className="group relative bg-white text-slate-900 px-10 py-5 rounded-full font-bold text-lg flex items-center gap-3 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.6)] transition-all duration-300"
           >
-            Start Your Project
+            <Link to="/contactus">Start Your Project</Link>
             {/* Arrow Animation on Hover */}
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </motion.button>

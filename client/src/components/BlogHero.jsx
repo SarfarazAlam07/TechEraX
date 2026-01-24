@@ -22,7 +22,7 @@ const BlogHero = () => {
           transition={{ delay: 0.1 }}
           className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6"
         >
-          Insights & <br />
+          Insights & {" "}
           <span className="text-shine">Answers.</span>
         </motion.h1>
         <motion.p 

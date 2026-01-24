@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, PenTool, Settings, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const ServiceTabs = () => {
   const [activeTab, setActiveTab] = useState('fullstack');
@@ -76,7 +77,7 @@ const ServiceTabs = () => {
                 
                 {/* Orange Button from Screenshot */}
                 <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-bold flex items-center gap-2 transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:-translate-y-1">
-                  Explore Service <ArrowRight className="w-5 h-5" />
+                  <Link  to="/home#services">Explore Service</Link> <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
 
