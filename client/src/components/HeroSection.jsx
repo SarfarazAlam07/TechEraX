@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Phone, Route } from "lucide-react";
+import { Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Routes } from "react-router-dom";
 import ContactUs from "../Pages/ContactUs";
 // import { useNavigate } from 'react-router-dom';
@@ -21,7 +22,7 @@ const gridOverlayStyle = {
   backgroundSize: "50px 50px",
 };
 
-const words = ["Ideas", "Visions", "Dreams", "Future"];
+const words = ["Custom Website", "Mobile App", "Online Store", "Software"];
 
 // ==========================================
 // ROTATING TEXT (Desktop Fix: Height Increased)
@@ -38,11 +39,11 @@ const RotatingText = () => {
 
   return (
     // FIX: 'h-[1.5em]' kiya (pehle 1.2em tha) taaki 'g', 'y' jaise letters kate nahi
-    <span className="block relative h-[1.5em] w-full text-teal-600 text-left overflow-hidden">
+    <span className="block relative h-[1.5em] w-full text-teal-600  overflow-hidden">
       <AnimatePresence mode="popLayout">
         <motion.span
           key={words[index]}
-          className="absolute left-0 top-1 block w-full  text-left max-sm:text-center" // top-1 thoda centering ke liye
+          className="absolute left-0 top-1 w-full grid text-start " // top-1 thoda centering ke liye
           initial={{ y: "100%", opacity: 0, filter: "blur(4px)" }}
           animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
           exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
@@ -64,7 +65,7 @@ const ThreeDButton = ({ children, colorClass, onClick, buttonAnimate }) => {
       whileTap={{ scale: 0.97, y: 2 }}
       whileHover={{ y: -2 }}
       animate={buttonAnimate}
-      className={`relative z-10 flex-1 py-3 sm:py-4 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm min-[400px]:text-base text-white transition-all ${colorClass}`}
+      className={`relative z-10 flex flex-1 py-3 sm:py-4 px-4 rounded-xl font-semibold  items-center justify-center gap-2 text-sm min-[400px]:text-base text-white transition-all ${colorClass}`}
       onClick={onClick}
     >
       {children}
@@ -93,6 +94,7 @@ const subtleFloat = {
 // 1. MOBILE HERO SECTION (Already Fixed)
 // ==========================================
 const HeroMobile = () => {
+  const navigate = useNavigate();
   //     const navigate = useNavigate();
 
   //   const handleContactClick = () => {
@@ -120,48 +122,35 @@ const HeroMobile = () => {
       ></motion.div>
 
       {/* Top Section */}
-      <div className="relative z-10 flex-shrink-0 flex flex-col justify-center aling-center w-full mb-4 pt-2">
+      <div className="relative z-10 flex-shrink-0 flex flex-col justify-center aling-center w-full  pt-2">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-3xl min-[400px]:text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-4 tracking-tight w-full flex flex-col items-center justify-center"
+          className="text-3xl pl-10 min-[400px]:text-4xl sm:text-[2.5rem] font-extrabold text-gray-900 leading-tight  tracking-tight w-full flex flex-col items-center justify-center"
         >
-          <span className="block text-center w-full  mb-1">Turning Your</span>
-          <span className="grid place-items-center w-full mb-1">
+          <span className="block start w-full mb-1">Building Your </span>
+          <div className="grid  w-full mb-1">
             <RotatingText />
-          </span>
-          <span className="block w-full text-center mb-1">into Digital</span>
-          <span className="block w-full text-center">Reality.</span>
+          </div>
+          <span className="block w-full text-start mb-1">to Grow Your</span>
+          <span className="block w-full text-start">Success.</span>
         </motion.div>
         {/* //onClick={handleContactClick} style={{ cursor: 'pointer' }} */}
-        <div className="flex flex-row gap-3 w-full">
-          <ThreeDButton
-            colorClass="bg-gradient-to-r from-green-400 to-green-600 shadow-[0_4px_0_rgb(22,163,74)]"
-            buttonAnimate={subtleFloat}
-          >
-            <Phone className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
-            <Link to="/ContactUs/#contact-section">call me </Link>
-          </ThreeDButton>
-
-          <ThreeDButton colorClass="bg-orange-500 shadow-[0_4px_0_rgb(234,88,12)]">
-            Explore
-          </ThreeDButton>
-        </div>
       </div>
 
       {/* Bottom Section */}
-      <div className="relative z-10 flex-1 min-h-[280px] w-full flex flex-col justify-end pb-1">
+      <div className="relative z-10 flex-1 min-h-[15rem] w-full flex flex-col justify-end pb-1">
         <div className="flex-1 w-full flex items-center justify-center overflow-hidden mb-2">
           <motion.div
-            className="w-full h-full max-h-[350px] flex items-center justify-center"
+            className="w-full h-max max-h-[20rem] flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             <motion.div
               // CHANGE 1: 'overflow-hidden' add kiya taaki kuch bahar na nikle
-              className="bg-[#FFF8F0] p-4 rounded-[2rem] border border-orange-100 w-[100%] h-[100%] shadow-xl flex items-center justify-center overflow-hidden"
+              className="bg-[#FFF8F0] p-4 rounded-[50%] border border-orange-100 w-max h-[100%] shadow-xl flex items-center justify-center overflow-hidden"
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
@@ -170,7 +159,7 @@ const HeroMobile = () => {
                 alt="Digital Experience"
                 // CHANGE 2: 'rounded-lg' hata kar 'rounded-3xl' kar diya.
                 // Ab image ke corners bhi waise hi gol honge jaise card ke hain.
-                className="w-full h-full object-contain mix-blend-multiply rounded-3xl"
+                className="w-full h-full object-contain mix-blend-multiply rounded-[50%]"
               />
             </motion.div>
           </motion.div>
@@ -182,6 +171,23 @@ const HeroMobile = () => {
           transition={{ delay: 0.8 }}
           className="w-full px-1 flex-shrink-0"
         >
+          <div className="flex flex-row gap-3 items-center justify-center w-[90%]  m-3">
+            <ThreeDButton
+              colorClass="bg-gradient-to-r from-green-400 to-green-600 shadow-[0_4px_0_rgb(22,163,74)]"
+              buttonAnimate={subtleFloat}
+              onClick={() => (window.location.href = "tel:+917277999901")}
+            >
+              <Phone className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
+              <Link to="/ContactUs/#contact-section">call me </Link>
+            </ThreeDButton>
+
+            <ThreeDButton
+              colorClass="bg-orange-500 shadow-[0_4px_0_rgb(234,88,12)]"
+              onClick={() => navigate("/ContactUs")}
+            >
+              Contact Us
+            </ThreeDButton>
+          </div>
           <p className="text-gray-700 text-sm min-[400px]:text-base leading-relaxed font-medium text-center">
             Whether it's a small business, a growing startup, or your personal
             portfolio, TechEraX builds world-class digital solutions tailored
@@ -197,6 +203,7 @@ const HeroMobile = () => {
 // 2. DESKTOP HERO SECTION (Fixes applied)
 // ==========================================
 const HeroDesktop = () => {
+  const navigate = useNavigate();
   return (
     // FIX 1: 'min-h-screen' use kiya taaki content overflow na ho (scroll aa jaye agar screen choti ho)
     // FIX 2: 'py-20' padding di taaki top/bottom se chipke nahi
@@ -216,7 +223,7 @@ const HeroDesktop = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             // FIX 3: 'text-6xl lg:text-7xl' responsive font size
-            className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight w-full"
+            className="text-6xl lg:text-6xl font-bold text-gray-900 leading-tight w-full"
           >
             <span className="block mb-2">Turning Your</span>
             <span className="block mb-2  w-full">
@@ -231,11 +238,15 @@ const HeroDesktop = () => {
             <ThreeDButton
               colorClass="bg-gradient-to-r from-green-400 to-green-600 shadow-[0_4px_0_rgb(22,163,74)]"
               buttonAnimate={subtleFloat}
+              onClick={() => (window.location.href = "tel:+917277999901")}
             >
               <Phone className="w-5 h-5 fill-current" /> Call Now
             </ThreeDButton>
-            <ThreeDButton colorClass="bg-orange-500 shadow-[0_4px_0_rgb(234,88,12)]">
-              Explore
+            <ThreeDButton
+              colorClass="bg-orange-500 shadow-[0_4px_0_rgb(234,88,12)]"
+              onClick={() => navigate("/ContactUs")}
+            >
+              Contact Us
             </ThreeDButton>
           </div>
         </div>
@@ -243,7 +254,7 @@ const HeroDesktop = () => {
         {/* Right Side */}
         <div className="relative flex flex-col items-center justify-center pt-10">
           <motion.div
-            className="max-w-[24rem] z-10 w-full"
+            className="max-w-[30rem] z-10 w-full"
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}

@@ -90,7 +90,7 @@ const Navbar = () => {
           
 
           {/* Mobile CTA Button */}
-          <Link to="/contact" onClick={() => setIsOpen(false)}>
+          <Link to="/contactus" onClick={() => setIsOpen(false)}>
              <button className="mt-4 px-8 py-3 bg-orange-500 text-white font-bold rounded-full shadow-md">
                 Contact Us
              </button>

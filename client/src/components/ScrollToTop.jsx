@@ -8,6 +8,9 @@ const ScrollToTop = () => {
 
   useEffect(() => {
     // Jab bhi pathname change hoga, ye window ko (0, 0) par bhej dega
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
     window.scrollTo(0, 0);
   }, [pathname]);
 
