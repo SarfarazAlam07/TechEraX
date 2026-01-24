@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root body, #root{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0; 
+  box-sizing: border-box;
+  background-color: white;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* --gradient-HeroSection: linear-gradient(135deg, #eff6ff 0%, #fff 50%, #fef3c7 100%); */
+  /* --gradient-HeroSection: linear-gradient(135deg, #eff6ff 0%, #fff 50%, #fef3c7 100%); */
+
+}
+
+a {
+  font-weight: 500;
+  
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* Custom Grid Pattern */
+.bg-grid-pattern {
+  background-size: 50px 50px;
+  
+  background-image: linear-gradient(rgba(59, 130, 246, .08) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, .08) 1px, transparent 1px);
+  /* {demo background} */
+  /* background-color: red;  */
+  /* backgroundImage: `
+    linear-gradient(to right, rgba(59,130,246,0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59,130,246,0.5) 1px, transparent 1px)
+  `, */
+}
+/* Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* IE, Edge and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+/* --- Text Shine Animation --- */
+@keyframes shine {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+.text-shine {
+  background: linear-gradient(
+    to right, 
+    #22d3ee 20%,   /* Cyan */
+    #a855f7 40%,   /* Purple */
+    #ec4899 50%,   /* Pink */
+    #ffffff 55%,   /* SHINE COLOR (White) */
+    #22d3ee 60%,   /* Cyan */
+    #a855f7 80%,   /* Purple */
+    #ec4899 100%   /* Pink */
+  );
+  background-size: 200% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: shine 4s linear infinite;
+}
+
+.text-shine-light {
+  background: linear-gradient(
+    to right, 
+    #22d3ee 20%,   /* Cyan */
+    #a855f7 40%,   /* Purple */
+    #ec4899 50%,   /* Pink */
+    #c0c9d8 55%,   /* SHINE COLOR (White) */
+    #22d3ee 60%,   /* Cyan */
+    #a855f7 80%,   /* Purple */
+    #ec4899 100%   /* White */
+  );
+  background-size: 200% auto;
+  color: #fff;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite; /* Same Speed */
+}
