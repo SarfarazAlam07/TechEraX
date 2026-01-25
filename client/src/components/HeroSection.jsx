@@ -225,13 +225,13 @@ const HeroDesktop = () => {
             // FIX 3: 'text-6xl lg:text-7xl' responsive font size
             className="text-6xl lg:text-6xl font-bold text-gray-900 leading-tight w-full"
           >
-            <span className="block mb-2">Turning Your</span>
+            <span className="block mb-2">Building Your</span>
             <span className="block mb-2  w-full">
               {/* Rotating Text Container height increased in component above */}
               <RotatingText />
             </span>
-            <span className="block mb-2">into Digital</span>
-            <span className="block">Reality.</span>
+            <span className="block mb-2">to Grow Your</span>
+            <span className="block">Success.</span>
           </motion.h1>
 
           <div className="flex gap-5 max-w-md w-full">
