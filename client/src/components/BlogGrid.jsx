@@ -10,6 +10,7 @@ const BlogGrid = () => {
       time: "4 min read",
       image:
         "https://tse1.mm.bing.net/th/id/OIP.w4IjiUPTFa78oLVGxNYEzgHaEO?rs=1&pid=ImgDetMain&o=7&rm=3",
+      url: "https://www.sitepoint.com/vue-vs-react/",
     },
     {
       id: 2,
@@ -17,7 +18,8 @@ const BlogGrid = () => {
       category: "Design",
       time: "6 min read",
       image:
-        "https://cdn.dribbble.com/users/257709/screenshots/6924629/uixninja_adminpanel_dashboard_ui_4x.png",
+        "https://images.unsplash.com/photo-1555421689-491a97ff2040?auto=format&fit=crop&w=800&q=80",
+      url: "https://dev-story.com/blog/mobile-app-ui-ux-design-trends/",
     },
     {
       id: 3,
@@ -26,6 +28,7 @@ const BlogGrid = () => {
       time: "3 min read",
       image:
         "https://storage.googleapis.com/stateless-ceoblognation-com/2022/02/6f2f3323-seo-ranking-scaled.jpeg",
+      url: "https://seotesting.com/blog/modern-seo-strategies/",
     },
   ];
 
@@ -58,9 +61,14 @@ const BlogGrid = () => {
                 <h3 className="text-xl font-bold text-slate-900 mb-4 line-clamp-2 group-hover:text-blue-600 transition-colors">
                   {blog.title}
                 </h3>
-                <button className="flex items-center gap-1 text-sm font-bold text-gray-300 hover:text-blue-600 hover:bg-gray-200 transition-colors">
+                <a
+                  href={blog.url}
+                  target="_blank" // Naye tab me khulne ke liye (optional)
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm font-bold text-gray-300 hover:text-blue-600 hover:bg-gray-200 transition-colors px-3 py-2 rounded-md cursor-pointer"
+                >
                   Read More <ArrowUpRight className="w-4 h-4" />
-                </button>
+                </a>
               </div>
             </div>
           ))}

@@ -41,6 +41,7 @@ const ServicesSection = () => {
               "https://rankfame.com/wp-content/uploads/2022/07/Web-Development-Company-Names.webp",
             description:
               "Custom websites tailored to your brand needs using React and Tailwind.",
+            url: "https://developer.ibm.com/technologies/web-development/articles/",
           },
           {
             id: 2,
@@ -50,6 +51,7 @@ const ServicesSection = () => {
               "https://img.freepik.com/free-vector/app-development-banner_33099-1720.jpg",
             description:
               "Native and cross-platform mobile apps for iOS and Android.",
+            url: "https://developer.ibm.com/technologies/mobile/articles/",
           },
           {
             id: 3,
@@ -58,6 +60,7 @@ const ServicesSection = () => {
             image:
               "https://okcredit-blog-images-prod.storage.googleapis.com/2021/04/ecommerce3-2.jpg",
             description: "Scalable online stores with secure payment gateways.",
+            url: "https://www.forbes.com/sites/johnhall/2025/06/29/how-the-e-commerce-industry-is-changing-and-what-companies-are-doing-to-succeed/",
           },
           {
             id: 4,
@@ -67,6 +70,7 @@ const ServicesSection = () => {
               "https://static.vecteezy.com/system/resources/thumbnails/002/411/326/small_2x/online-digital-marketing-strategy-and-business-analysis-plan-business-concept-free-photo.jpg",
             description:
               "Boost your online presence with SEO and content strategy.",
+            url: "https://www.forbes.com/advisor/business/what-is-digital-marketing/",
           },
           {
             id: 5,
@@ -76,6 +80,7 @@ const ServicesSection = () => {
               "https://www.pcrbusiness.com/wp-content/uploads/2020/10/Cloud-computing_October2.jpg",
             description:
               "Secure and reliable cloud hosting and infrastructure.",
+            url: "https://www.techtarget.com/searchcloudcomputing/definition/cloud-server",
           },
           {
             id: 6,
@@ -85,6 +90,7 @@ const ServicesSection = () => {
               "https://img.freepik.com/premium-photo/professional-cybersecurity-background-linkedin-page_1273271-14865.jpg?w=740",
             description:
               "Protect your digital assets with advanced security audits.",
+            url: "https://thehackernews.com/",
           },
         ];
 
@@ -187,9 +193,12 @@ const ServicesSection = () => {
                     {service.description}
                   </p>
 
-                  <div className="flex items-center gap-2 text-blue-600 font-medium group-hover:gap-3 transition-all mt-auto">
+                  <a
+                    href={service.url}
+                    className="flex items-center gap-2 text-blue-600 font-medium group-hover:gap-3 transition-all mt-auto w-fit cursor-pointer"
+                  >
                     Learn more <ArrowRight className="w-4 h-4" />
-                  </div>
+                  </a>
                 </div>
               </motion.div>
             );
