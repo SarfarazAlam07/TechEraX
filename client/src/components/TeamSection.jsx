@@ -30,7 +30,7 @@ const teamMembers = [
     role: "Co-Founder || CFO || BDM",
     description:
       "Scaling tech through financial precision and strategic growth. I specialize in turning client opportunities into sustainable revenue",
-    image: "/asif2.jpeg",
+    image: "/asif3.jpeg",
     socials: {
       twitter: "#",
       linkedin: "#",
