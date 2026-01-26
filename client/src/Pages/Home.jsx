@@ -17,6 +17,7 @@ const Home = () => {
         description="TechEraX provides top-notch Web Development, Mobile Apps, and Digital Marketing services in Patna, Bihar. Transform your business with us."
         keywords="Web Development Patna, Software Company Bihar, App Developers Paliganj, TechEraX, MERN Stack Agency"
         url="/"
+        image="/logo.jpg"
       />
       <HeroSection />
 //     <ServicesSection />
