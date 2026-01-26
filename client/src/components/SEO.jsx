@@ -6,7 +6,7 @@ const SEO = ({ title, description, keywords, url }) => {
   const defaultDescription =
     "TechEraX is a leading software development company in Patna, Bihar offering Web Development, App Development, and UI/UX Design services.";
   const defaultKeywords =
-    "Website banane wala, School Management Software, Coaching App Developer, Online Kirana Dukan App, Restaurant Food Delivery App, Medical Store Billing Software, Real Estate Website Maker, News Portal Developer, NGO Website, Hotel Booking App, Salon Booking System, Gym Management Software, Travel Agency Website, Sasta Website Design Bihar, TechEraX";
+    "Best Website Company in Bihar, App Development company in Bihar, Techerax , techerax,founder of techerax, Sarfaraz techereax, Asif Techerax, zugnu Techerax, sahil techerax , Dheraj techerax, Website banane wala, School Management Software, Coaching App Developer, Online Kirana Dukan App, Restaurant Food Delivery App, Medical Store Billing Software, Real Estate Website Maker, News Portal Developer, NGO Website, Hotel Booking App, Salon Booking System, Gym Management Software, Travel Agency Website, Sasta Website Design Bihar, TechEraX";
   const siteUrl = "https://tech-era-x.vercel.app";
 
   return (
@@ -17,7 +17,6 @@ const SEO = ({ title, description, keywords, url }) => {
       <meta name="keywords" content={keywords || defaultKeywords} />
       <link rel="canonical" href={url ? `${siteUrl}${url}` : siteUrl} />
 
-      {/* Open Graph / Facebook (Jab link share karoge to kaisa dikhega) */}
       <meta property="og:type" content="website" />
       <meta property="og:title" content={title} />
       <meta
