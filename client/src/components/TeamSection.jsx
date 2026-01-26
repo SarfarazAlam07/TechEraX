@@ -132,7 +132,7 @@ const TeamSection = () => {
         viewport={{ once: true, amount: 0.5 }}
         variants={fadeInUpVariants}
       >
-        <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-600 mb-3">
+        <h2 id="ourTeam" className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-600 mb-3">
           Our Team
         </h2>
         <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto font-light">

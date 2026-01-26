@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom"; // Link Import kiya
 import {
   Facebook,
   Twitter,
@@ -7,42 +8,140 @@ import {
   Mail,
   MapPin,
   Phone,
+  ChevronDown,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import logo from "/logo.jpg";
 
 const Footer = () => {
-  return (
-    <footer className="bg-slate-950 text-slate-300 py-12 px-6 md:px-12 border-t border-slate-800 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-900/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-900/10 rounded-full blur-[120px] pointer-events-none" />
+  const [openSection, setOpenSection] = useState(null);
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 mb-10">
-          {/* BRAND & LOGO */}
-          <div className="col-span-2 lg:col-span-1 space-y-4">
-            <div className="flex items-center gap-3">
+  const toggleSection = (section) => {
+    setOpenSection(openSection === section ? null : section);
+  };
+
+  // --- DATA LINKS (Yahan se links control honge) ---
+  const serviceLinks = [
+    { name: "Web Development", path: "/services" },
+    { name: "App Development", path: "/services" },
+    { name: "UI/UX Design", path: "/services" },
+    { name: "Digital Marketing", path: "/services" },
+    { name: "SEO Optimization", path: "/services" },
+  ];
+
+  const companyLinks = [
+    { name: "About Us", path: "/about" },
+    { name: "Our Team", path: "/home" }, // Team section About page me hai
+    { name: "Our Portfolio", path: "/portfolio" },
+    { name: "Careers", path: "/contactus" }, // Currently redirecting to contact
+    { name: "Blog", path: "/blog" },
+  ];
+
+  // --- REUSABLE ACCORDION SECTION ---
+  const FooterSection = ({ title, links, id }) => {
+    const isOpen = openSection === id;
+
+    return (
+      <div className="border-b border-white/10 md:border-none last:border-none">
+        {/* Mobile Header (Button) */}
+        <button
+          onClick={() => toggleSection(id)}
+          className="md:hidden w-full flex justify-between items-center py-4 text-white font-bold text-base hover:text-blue-500 transition-colors text-left"
+        >
+          {title}
+          <ChevronDown
+            className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {/* Desktop Header (Static) */}
+        <h3 className="hidden md:block text-white font-bold text-lg mb-5 cursor-default">
+          {title}
+        </h3>
+
+        {/* Content Wrapper */}
+        <div className="hidden md:block">
+          <LinkList links={links} />
+        </div>
+
+        {/* Mobile Animation */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden overflow-hidden"
+            >
+              <div className="pb-4 text-left">
+                <LinkList links={links} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  // --- LINK LIST COMPONENT (DRY Code) ---
+  const LinkList = ({ links }) => (
+    <ul className="space-y-3 text-sm">
+      {links.map((item, index) => (
+        <li key={index}>
+          <Link
+            to={item.path}
+            className="hover:text-blue-400 transition-colors block py-1"
+            onClick={() => window.scrollTo(0, 0)} // Click karne pe page top pe khulega
+          >
+            {item.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+
+  return (
+    <footer className="bg-black text-gray-400 border-t border-white/10 relative overflow-hidden font-sans">
+      {/* Background Glow */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/5 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-5 md:px-12 py-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          {/* 1. BRAND SECTION */}
+          <div className="flex flex-col items-start space-y-5 mb-6 md:mb-0">
+            <Link
+              to="/"
+              className="flex items-center gap-3 group"
+              onClick={() => window.scrollTo(0, 0)}
+            >
               <img
                 src={logo}
                 alt="TechEraX Logo"
-                className="h-12 w-12 rounded-full object-cover border-2 border-slate-700"
+                className="h-10 w-10 rounded-full object-cover border border-gray-700 group-hover:border-blue-500 transition-colors"
               />
-              {/* 👇 YAHAN CHANGE KIYA HAI: 'text-shine-light' */}
-              <span className="text-2xl font-bold text-shine-light">
+              <span className="text-2xl font-bold text-white tracking-wide group-hover:text-blue-400 transition-colors">
                 TechEraX
               </span>
-            </div>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-              Crafting digital experiences that merge creativity with
-              technology.
+            </Link>
+            <p className="text-gray-400 text-sm leading-relaxed max-w-xs text-left">
+              Building digital products, brands, and experiences for the modern
+              world.
             </p>
 
+            {/* Social Icons */}
             <div className="flex gap-3">
               {[Facebook, Twitter, Linkedin, Instagram].map((Icon, index) => (
                 <a
                   key={index}
                   href="#"
-                  className="bg-slate-900 p-2 rounded-full text-slate-400 hover:bg-blue-600 hover:text-white transition-all border border-slate-800"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/5 p-2.5 rounded-full text-gray-400 hover:bg-blue-600 hover:text-white transition-all duration-300 hover:-translate-y-1"
                 >
                   <Icon className="w-4 h-4" />
                 </a>
@@ -50,69 +149,79 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* SERVICES */}
-          <div className="col-span-1">
-            <h3 className="text-white font-bold text-lg mb-4">Services</h3>
-            <ul className="space-y-3 text-sm">
-              {["Web Dev", "Mobile Apps", "UI/UX Design", "Cloud"].map(
-                (item) => (
-                  <li key={item}>
-                    <a
-                      href="#"
-                      className="hover:text-blue-400 transition-colors"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ),
-              )}
-            </ul>
-          </div>
+          {/* 2. SERVICES SECTION */}
+          <FooterSection title="Services" id="services" links={serviceLinks} />
 
-          {/* COMPANY */}
-          <div className="col-span-1">
-            <h3 className="text-white font-bold text-lg mb-4">Company</h3>
-            <ul className="space-y-3 text-sm">
-              {["About Us", "Our Team", "Careers", "Privacy"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* 3. COMPANY SECTION */}
+          <FooterSection title="Company" id="company" links={companyLinks} />
 
-          {/* CONTACT */}
-          <div className="col-span-2 lg:col-span-1">
-            <h3 className="text-white font-bold text-lg mb-4">Contact Us</h3>
-            <ul className="space-y-3 text-sm text-slate-400">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-                <span>
-                  Chiksi, Paliganj patna (Bihar)
+          {/* 4. CONTACT SECTION */}
+          <div className="border-b border-white/10 md:border-none last:border-none">
+            {/* Contact Mobile Header */}
+            <h3 className="md:hidden w-full py-4 text-white font-bold text-base text-left">
+              Contact Us
+            </h3>
+            {/* Contact Desktop Header */}
+            <h3 className="hidden md:block text-white font-bold text-lg mb-5 cursor-default">
+              Contact
+            </h3>
+
+            <ul className="space-y-4 text-sm pb-4 md:pb-0">
+              <li className="flex items-start gap-3 group">
+                <MapPin className="w-5 h-5 text-blue-500 shrink-0 mt-0.5 group-hover:text-white transition-colors" />
+                <span className="leading-relaxed">
+                  Near Himalaya University,
                   <br />
-                  Near Himalaya University
+                  Chiksi, Paliganj, Patna (801110)
                 </span>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-blue-500 shrink-0" />
-                <span>+91 727799-9901</span>
+              <li className="flex items-center gap-3 group">
+                <Phone className="w-5 h-5 text-blue-500 shrink-0 group-hover:text-white transition-colors" />
+                <a
+                  href="tel:+917277999901"
+                  className="hover:text-white transition-colors"
+                >
+                  +91 727799-9901
+                </a>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-blue-500 shrink-0" />
-                <span>TechEraX@gmail.com</span>
+              <li className="flex items-center gap-3 group">
+                <Mail className="w-5 h-5 text-blue-500 shrink-0 group-hover:text-white transition-colors" />
+                <a
+                  href="mailto:TechEraX@gmail.com"
+                  className="hover:text-white transition-colors"
+                >
+                  TechEraX@gmail.com
+                </a>
               </li>
             </ul>
           </div>
         </div>
 
         {/* BOTTOM BAR */}
-        <div className="border-t border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-slate-500 text-sm">
-            © {new Date().getFullYear()} TechEraX. All rights reserved©.
+        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+          <p className="text-gray-600 text-xs">
+            © {new Date().getFullYear()} TechEraX. All rights reserved.
           </p>
-          <p className="text-slate-600 text-xs">Designed for the Future.</p>
+          <div className="flex gap-6">
+            <Link
+              to="#"
+              className="text-xs text-gray-600 hover:text-white transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              to="#"
+              className="text-xs text-gray-600 hover:text-white transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
+              to="#"
+              className="text-xs text-gray-600 hover:text-white transition-colors"
+            >
+              Cookies
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
