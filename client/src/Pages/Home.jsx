@@ -13,7 +13,7 @@ const Home = () => {
   return (
     <div className="bg-white"> {/* pt for navbar */}
       <SEO 
-        title="Best Software Development Company in Patna"
+        title="TechEraX || Best Software Development Company in Patna"
         description="TechEraX provides top-notch Web Development, Mobile Apps, and Digital Marketing services in Patna, Bihar. Transform your business with us."
         keywords="Web Development Patna, Software Company Bihar, App Developers Paliganj, TechEraX, MERN Stack Agency"
         url="/"
