@@ -28,12 +28,14 @@ const BlogFAQ = () => {
   ];
 
   return (
-    <section className="py-20 px-6 md:px-12 bg-slate-50">
+    // FIX 1: 'text-slate-900' add kiya taaki default text Dark (Black) ho jaye
+    <section className="py-20 px-6 md:px-12 bg-slate-50 text-slate-900">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center p-3 bg-blue-100 rounded-full text-blue-600 mb-4">
             <HelpCircle className="w-6 h-6" />
           </div>
+          {/* Heading color explicit kar diya */}
           <h2 className="text-3xl font-bold text-slate-900">Common Questions</h2>
           <p className="text-slate-500 mt-2">Everything you need to know before starting.</p>
         </div>
@@ -43,9 +45,12 @@ const BlogFAQ = () => {
             <div key={index} className="bg-white border border-gray-400 rounded-xl overflow-hidden shadow-sm">
               <button 
                 onClick={() => toggleAccordion(index)}
-                className="w-full flex justify-between items-center p-6 text-left hover:bg-gray-50 hover:text-black transition-colors"
+                // FIX 2: 
+                // - 'bg-transparent': Global button background hataya
+                // - 'text-slate-900': Text color dark black kiya explicitly
+                className="w-full flex justify-between items-center p-6 text-left bg-transparent text-slate-900 hover:bg-gray-50 transition-colors"
               >
-                <span className="font-semibold  text-lg">{faq.question}</span>
+                <span className="font-semibold text-lg">{faq.question}</span>
                 {activeAccordion === index ? (
                   <ChevronUp className="w-5 h-5 text-blue-600" />
                 ) : (
@@ -58,7 +63,8 @@ const BlogFAQ = () => {
                   activeAccordion === index ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'
                 }`}
               >
-                <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-gray-50 mt-2">
+                {/* Answer text already slate-600 hai, jo sahi hai */}
+                <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-gray-100 mt-2">
                   {faq.answer}
                 </div>
               </div>
