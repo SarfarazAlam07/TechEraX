@@ -1,11 +1,11 @@
-// hello
 import React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CTASection = () => {
   const Navigate = useNavigate();
+
   return (
     <section className="py-20 px-4 md:px-12 bg-white relative">
       {/* MAIN CONTAINER (Dark Card) */}
@@ -13,10 +13,11 @@ const CTASection = () => {
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="max-w-6xl mx-auto bg-[#0F172A] rounded-[2.5rem] relative overflow-hidden text-center py-20 px-6 md:px-20 shadow-2xl shadow-blue-900/20"
+        viewport={{ once: true, margin: "-100px" }} // Margin add kiya taaki thoda pehle load ho
+        className="max-w-6xl mx-auto bg-[#0F172A] rounded-[2.5rem] relative overflow-hidden text-center py-20 px-6 md:px-20 shadow-2xl shadow-blue-900/20 transform-gpu" // transform-gpu add kiya
       >
         {/* --- ANIMATED BACKGROUND BLOBS --- */}
+        
         {/* Blue Blob */}
         <motion.div
           animate={{
@@ -25,7 +26,8 @@ const CTASection = () => {
             y: [0, -30, 0],
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2"
+          style={{ backfaceVisibility: "hidden" }} // Hardware acceleration trick
+          className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2 transform-gpu will-change-transform"
         />
 
         {/* Purple Blob */}
@@ -36,13 +38,14 @@ const CTASection = () => {
             y: [0, 40, 0],
           }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2"
+          style={{ backfaceVisibility: "hidden" }} // Hardware acceleration trick
+          className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[80px] translate-x-1/2 translate-y-1/2 transform-gpu will-change-transform"
         />
 
-        {/* Grid Overlay for Texture */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
+        {/* Grid Overlay - Opacity thodi kam ki taaki load kam ho */}
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-overlay pointer-events-none"></div>
 
-        {/* --- CONTENT --- */}
+        {/* --- CONTENT (Z-Index fix) --- */}
         <div className="relative z-10 flex flex-col items-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-1.5 text-blue-300 text-sm font-medium mb-8">
@@ -66,10 +69,10 @@ const CTASection = () => {
 
           {/* PRIMARY BUTTON */}
           <motion.button
-            onClick={() => Navigate("/contactus")} // Link ki jagah ye lagayein
+            onClick={() => Navigate("/contactus")}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="group relative bg-white text-slate-900 px-10 py-5 rounded-full font-bold text-lg flex items-center gap-3 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.6)] transition-all duration-300"
+            className="group relative bg-white text-slate-900 px-10 py-5 rounded-full font-bold text-lg flex items-center gap-3 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.6)] transition-all duration-300 transform-gpu"
           >
             Start Your Project
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
