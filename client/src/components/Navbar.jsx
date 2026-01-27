@@ -4,8 +4,8 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import logo from "/logo.jpg";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false); 
-  const [desktopDropdown, setDesktopDropdown] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
+  const [desktopDropdown, setDesktopDropdown] = useState(false);
 
   const location = useLocation();
 
@@ -15,23 +15,21 @@ const Navbar = () => {
   const isResourceActive = location.pathname.includes("/blog");
 
   return (
-    <nav className="w-full bg-white/80 backdrop-blur-md py-3 px-6 md:px-12 flex justify-between items-center shadow-sm sticky top-0 z-50 h-[70px]">
+    <nav className="w-full bg-white/80 backdrop-blur-md py-3 px-6 md:px-8 lg:px-12 flex justify-between items-center shadow-sm sticky top-0 z-50 h-[70px]">
       {/* --- LOGO SECTION --- */}
       <Link to="/" className="flex items-center gap-2 cursor-pointer">
         <img
           src={logo}
           alt="TechEraX Logo"
-          className="h-10 w-10 md:h-14 md:w-14 rounded-full object-cover border border-gray-200"
+          className="h-10 w-10 md:h-12 lg:h-14 md:w-12 lg:w-14 rounded-full object-cover border border-gray-200"
         />
-        <span className="text-xl md:text-3xl font-bold text-shine">
+        <span className="text-xl md:text-2xl lg:text-3xl font-bold text-shine">
           TechEraX
         </span>
       </Link>
 
-      {/* --- DESKTOP MENU --- */}
-      <div className="hidden md:flex items-center gap-8 font-medium">
-        {" "}
-        {/* Parent se fixed color hataya */}
+      {/* --- DESKTOP/TABLET MENU --- */}
+      <div className="hidden lg:flex items-center gap-8 font-medium">
         <NavLink to="/home" className={navLinkClasses}>
           Home
         </NavLink>
@@ -44,13 +42,13 @@ const Navbar = () => {
         <NavLink to="/portfolio" className={navLinkClasses}>
           Portfolio
         </NavLink>
+
         {/* RESOURCE DROPDOWN (Desktop) */}
         <div
           className="relative group"
           onMouseEnter={() => setDesktopDropdown(true)}
           onMouseLeave={() => setDesktopDropdown(false)}
         >
-          {/* Active logic: Agar resource active hai to blue, warna gray */}
           <div
             className={`flex items-center gap-1 cursor-pointer transition py-4 ${isResourceActive ? "text-blue-600 font-bold" : "text-gray-600 hover:text-blue-600"}`}
           >
@@ -86,10 +84,66 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* --- 3D CONTACT BUTTON (Desktop CTA) --- */}
+      {/* --- TABLET COMPACT MENU (768px - 1023px) --- */}
+      <div className="hidden md:flex lg:hidden items-center gap-4 font-medium text-sm">
+        <NavLink to="/home" className={navLinkClasses}>
+          Home
+        </NavLink>
+        <NavLink to="/about" className={navLinkClasses}>
+          About
+        </NavLink>
+        <NavLink to="/services" className={navLinkClasses}>
+          Services
+        </NavLink>
+        <NavLink to="/portfolio" className={navLinkClasses}>
+          Portfolio
+        </NavLink>
+
+        {/* RESOURCE DROPDOWN (Tablet) */}
+        <div
+          className="relative group"
+          onMouseEnter={() => setDesktopDropdown(true)}
+          onMouseLeave={() => setDesktopDropdown(false)}
+        >
+          <div
+            className={`flex items-center gap-1 cursor-pointer transition py-4 ${isResourceActive ? "text-blue-600 font-bold" : "text-gray-600 hover:text-blue-600"}`}
+          >
+            <span>More</span>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform duration-300 ${desktopDropdown ? "rotate-180" : ""}`}
+            />
+          </div>
+
+          {/* Dropdown Box */}
+          <div
+            className={`absolute top-full right-0 w-44 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${desktopDropdown ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"}`}
+          >
+            <div className="flex flex-col py-2">
+              <NavLink
+                to="/blog"
+                className={({ isActive }) =>
+                  `px-4 py-2.5 transition text-sm font-medium ${isActive ? "bg-blue-50 text-blue-600" : "hover:bg-gray-50 hover:text-blue-600 text-gray-600"}`
+                }
+              >
+                Our Blog
+              </NavLink>
+              <NavLink
+                to="/contactus"
+                className={({ isActive }) =>
+                  `px-4 py-2.5 transition text-sm font-medium ${isActive ? "bg-blue-50 text-blue-600" : "hover:bg-gray-50 hover:text-blue-600 text-gray-600"}`
+                }
+              >
+                Contact Us
+              </NavLink>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- 3D CONTACT BUTTON (Desktop & Tablet) --- */}
       <Link to="/contactus">
         <button
-          className="hidden md:block px-6 py-2 bg-orange-500 text-white font-bold rounded-full transition-all duration-100 
+          className="hidden md:block px-4 lg:px-6 py-2 bg-orange-500 text-white font-bold rounded-full transition-all duration-100 text-sm lg:text-base
           shadow-[0_4px_0_rgb(194,65,12)] 
           hover:shadow-[0_4px_0_rgb(154,52,18)] hover:bg-orange-600 
           active:shadow-none active:translate-y-[4px]"
