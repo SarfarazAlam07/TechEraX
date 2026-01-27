@@ -4,7 +4,7 @@ import React from 'react';
 import PortfolioHeader from '../components/PortfolioHeader';
 import PortfolioGallery from '../components/PortfolioGallery';
 import FeaturedCaseStudy from '../components/FeaturedCaseStudy';
-import CTASection from '../components/CTASection'; // Reuse CTA
+// import CTASection from '../components/CTASection'; // Reuse CTA
 
 const Portfolio = () => {
   return (
@@ -15,7 +15,7 @@ const Portfolio = () => {
       <FeaturedCaseStudy />
       
       {/* Final Call To Action */}
-      <CTASection />
+      {/* <CTASection /> */}
 
     </div>
   );
