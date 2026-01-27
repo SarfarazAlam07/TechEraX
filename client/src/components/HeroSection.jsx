@@ -342,15 +342,13 @@ const RotatingText = () => {
   }, []);
 
   return (
-    <div className="relative h-[1.6em] w-full overflow-hidden">
+    // Height updated to 1.2em so it scales with the huge mobile font
+    <div className="relative h-[1.2em] w-full overflow-hidden translate-y-1">
       <AnimatePresence mode="popLayout">
         <motion.span
           key={words[index]}
-          // CHANGE 1: Alignment Logic Updated
-          // Mobile: justify-start (Left)
-          // Tablet (md): justify-center (Center)
-          // Desktop (lg): justify-start (Left)
-          className="absolute inset-0 flex items-center justify-start md:justify-center lg:justify-start w-full text-teal-600"
+          // Mobile: Left Align | Tablet: Center | Desktop: Left
+          className="absolute inset-0 flex items-center justify-start md:justify-center lg:justify-start w-full text-teal-600 font-extrabold"
           initial={{ y: "100%", opacity: 0, filter: "blur(4px)" }}
           animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
           exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
@@ -398,13 +396,14 @@ const subtleFloat = {
 };
 
 // ==========================================
-// 1. HERO MOBILE (Text Left Aligned)
+// 1. HERO MOBILE (UPDATED: Bigger Text & Image)
 // ==========================================
 const HeroMobile = () => {
   const navigate = useNavigate();
   return (
     <div
-      className="relative w-full min-h-[calc(100vh-70px)] flex flex-col px-4 py-6 overflow-y-auto overflow-x-hidden"
+      // Layout Fix: 'justify-between' spreads content vertically to fill space
+      className="relative w-full h-[calc(100vh-70px)] flex flex-col justify-between px-5 py-6 overflow-hidden"
       style={color}
     >
       <motion.div
@@ -414,34 +413,30 @@ const HeroMobile = () => {
         transition={gridTransitionProp}
       ></motion.div>
 
-      {/* Top Text Section */}
-      <div className="relative z-10 flex-shrink-0 flex flex-col items-start justify-center w-full mb-6 mt-4">
+      {/* --- TOP: TEXT SECTION --- */}
+      <div className="relative z-10 w-full mt-2">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          // CHANGE 2: 'items-center text-center' -> 'items-start text-left'
-          className="text-3xl min-[400px]:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight w-full flex flex-col items-start text-left gap-1"
+          // TEXT SIZE FIX: text-[10vw] makes it huge on mobile to fill width
+          className="text-[10vw] sm:text-5xl font-extrabold text-gray-900 leading-[1.1] tracking-tight w-full flex flex-col items-start text-left"
         >
-          {/* Static Text */}
           <span className="block w-full">Building Your</span>
           
           {/* Rotating Text Wrapper */}
-          {/* CHANGE 3: justify-center -> justify-start */}
-          <div className="w-full flex justify-start">
+          <div className="w-full flex justify-start my-1">
             <RotatingText />
           </div>
           
-          {/* Static Text */}
           <span className="block w-full">to Grow Your</span>
           <span className="block w-full">Success.</span>
         </motion.div>
       </div>
 
-      {/* Bottom Image & Buttons Section (Kept Centered as requested) */}
-      <div className="relative z-10 flex-1 w-full flex flex-col justify-end items-center gap-6">
-        
-        {/* Image Circle */}
+      {/* --- MIDDLE: IMAGE SECTION --- */}
+      {/* flex-grow pushes buttons down and keeps image in center of remaining space */}
+      <div className="relative z-10 flex-grow flex items-center justify-center w-full py-2">
         <motion.div
           className="w-full flex items-center justify-center"
           initial={{ opacity: 0, scale: 0.8 }}
@@ -449,7 +444,9 @@ const HeroMobile = () => {
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           <motion.div
-            className="bg-[#FFF8F0] p-4 rounded-full border border-orange-100 shadow-xl w-[280px] h-[280px] flex items-center justify-center overflow-hidden"
+            // IMAGE SIZE FIX: w-[85vw] ensures it covers 85% of screen width
+            // aspect-square keeps it circular
+            className="bg-[#FFF8F0] p-4 rounded-full border border-orange-100 shadow-xl w-[85vw] max-w-[380px] aspect-square flex items-center justify-center overflow-hidden"
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
@@ -460,44 +457,44 @@ const HeroMobile = () => {
             />
           </motion.div>
         </motion.div>
-
-        {/* Buttons & Description */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="w-full max-w-md"
-        >
-          <div className="flex flex-row gap-4 mb-4">
-            <ThreeDButton
-              colorClass="bg-gradient-to-r from-green-400 to-green-600 shadow-[0_4px_0_rgb(22,163,74)]"
-              buttonAnimate={subtleFloat}
-              onClick={() => (window.location.href = "tel:+917277999901")}
-            >
-              <Phone className="w-5 h-5 fill-current" />
-              Call Me
-            </ThreeDButton>
-
-            <ThreeDButton
-              colorClass="bg-orange-500 shadow-[0_4px_0_rgb(234,88,12)]"
-              onClick={() => navigate("/ContactUs")}
-            >
-              Contact Us
-            </ThreeDButton>
-          </div>
-          <p className="text-gray-700 text-sm leading-relaxed font-medium text-center px-2">
-            Whether it's a small business, a growing startup, or your personal
-            portfolio, TechEraX builds world-class digital solutions tailored
-            just for you.
-          </p>
-        </motion.div>
       </div>
+
+      {/* --- BOTTOM: BUTTONS --- */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+        className="relative z-10 w-full flex-shrink-0 pb-2"
+      >
+        <div className="flex flex-row gap-4 mb-4">
+          <ThreeDButton
+            colorClass="bg-gradient-to-r from-green-400 to-green-600 shadow-[0_4px_0_rgb(22,163,74)]"
+            buttonAnimate={subtleFloat}
+            onClick={() => (window.location.href = "tel:+917277999901")}
+          >
+            <Phone className="w-5 h-5 fill-current" />
+            Call Me
+          </ThreeDButton>
+
+          <ThreeDButton
+            colorClass="bg-orange-500 shadow-[0_4px_0_rgb(234,88,12)]"
+            onClick={() => navigate("/ContactUs")}
+          >
+            Contact Us
+          </ThreeDButton>
+        </div>
+        <p className="text-gray-700 text-sm leading-relaxed font-medium text-center px-2">
+          Whether it's a small business, a growing startup, or your personal
+          portfolio, TechEraX builds world-class digital solutions tailored
+          just for you.
+        </p>
+      </motion.div>
     </div>
   );
 };
 
 // ==========================================
-// 2. HERO DESKTOP (No Changes made here)
+// 2. HERO DESKTOP (Unchanged - Tablet Optimized)
 // ==========================================
 const HeroDesktop = () => {
   const navigate = useNavigate();
