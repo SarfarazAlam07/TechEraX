@@ -73,7 +73,7 @@ const Footer = () => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="md:hidden overflow-hidden"
+              className="md:hidden overflow-hidden bg-black"
             >
               <div className="pb-4 text-left">
                 <LinkList links={links} />
