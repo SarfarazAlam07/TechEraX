@@ -4,7 +4,7 @@ import React from 'react';
 import HeroSection from '../components/HeroSection';
 import ServicesSection from '../components/ServicesSection';
 import TeamSection from '../components/TeamSection';
-import CTASection from '../components/CTASection'; 
+// import CTASection from '../components/CTASection'; 
 import TestimonialSection from '../components/TestimonialSection';
 import SEO from '../components/SEO';
 // Reused CTA
@@ -22,7 +22,7 @@ const Home = () => {
       <HeroSection />
 //     <ServicesSection />
 //     <TeamSection />
-//     <CTASection />
+{/* //     <CTASection /> */}
 //     <TestimonialSection />
 
     </div>
