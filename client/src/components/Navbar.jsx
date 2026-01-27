@@ -52,7 +52,7 @@ const Navbar = () => {
           <div
             className={`flex items-center gap-1 cursor-pointer transition py-4 ${isResourceActive ? "text-blue-600 font-bold" : "text-gray-600 hover:text-blue-600"}`}
           >
-            <span>Resources</span>
+            <span>More</span>
             <ChevronDown
               className={`w-4 h-4 transition-transform duration-300 ${desktopDropdown ? "rotate-180" : ""}`}
             />
