@@ -46,7 +46,7 @@ const Footer = () => {
         {/* Mobile Header (Button) */}
         <button
           onClick={() => toggleSection(id)}
-          className="md:hidden w-full flex justify-between items-center py-4 text-white font-bold text-base hover:text-blue-500 transition-colors text-left"
+          className="md:hidden w-full flex justify-between items-center py-4 text-white font-bold text-base bg-transparent hover:text-blue-500 transition-colors text-left"
         >
           {title}
           <ChevronDown
@@ -73,7 +73,7 @@ const Footer = () => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="md:hidden overflow-hidden bg-black"
+              className="md:hidden overflow-hidden bg-black/50"
             >
               <div className="pb-4 text-left">
                 <LinkList links={links} />
