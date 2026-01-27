@@ -10,7 +10,7 @@ import SEO from '../components/SEO';
 import IndustriesWeServe from '../components/IndustriesWeServe';
 const Services = () => {
   return (
-    <div className="bg-white pt-[70px]">
+    <div className="bg-white">
       <SEO 
         title="Web & App Development Services"
         description="We offer Full Stack Development, UI/UX Design, and Cloud Solutions. Best IT services in Bihar at affordable rates."
