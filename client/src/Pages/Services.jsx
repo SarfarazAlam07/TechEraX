@@ -5,7 +5,7 @@ import ServiceHeader from '../components/ServiceHeader';
 import ServiceTabs from '../components/ServiceTabs'; // Features List
 import TechStack from '../components/TechStack'; // Logo List
 import ProcessFlow from '../components/ProcessFlow'; // How It Works
-import CTASection from '../components/CTASection'; // Reuse CTA
+// import CTASection from '../components/CTASection'; // Reuse CTA
 import SEO from '../components/SEO';
 import IndustriesWeServe from '../components/IndustriesWeServe';
 const Services = () => {
@@ -24,7 +24,7 @@ const Services = () => {
       <ProcessFlow />
       
       {/* Services page ke end mein bhi CTA hona chahiye */}
-      <CTASection />
+      {/* <CTASection /> */}
 
     </div>
   );
