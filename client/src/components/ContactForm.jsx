@@ -10,7 +10,7 @@ import {
   Linkedin,
   Instagram,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+
 const ContactForm = () => {
   return (
     <section id="contact-section" className="py-12 px-6 md:px-12 bg-white">
@@ -95,7 +95,7 @@ const ContactForm = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="Ram"
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
                 />
               </div>
@@ -120,16 +120,23 @@ const ContactForm = () => {
                 </label>
                 <input
                   type="tel"
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="+91 620XXXXXX2"
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
                 />
               </div>
-              {/* Budget */}
+              
+              {/* Budget - FIXED HERE */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold t">
+                {/* Fixed Label Typo: removed 't' added 'text-slate-700' */}
+                <label className="text-sm font-semibold text-slate-700">
                   Project Budget
                 </label>
-                <select className="w-full px-4 py-3 rounded-lg border text-slate-200 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all">
+                
+                {/* FIX DETAILS:
+                   1. text-slate-200 HATAYA -> text-slate-700 LAGAYA (Dark text)
+                   2. bg-white ADD KIYA (Taaki mobile default gray background na le)
+                */}
+                <select className="w-full px-4 py-3 rounded-lg border text-slate-700 bg-white border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all">
                   <option>Select a Budget Range</option>
                   <option value="project-below-100">Project: Below $100</option>
                   <option value="project-100-350">Project: $100 - $350</option>
@@ -138,11 +145,6 @@ const ContactForm = () => {
                     Project: $550 - $1,200
                   </option>
                   <option value="project-1200-plus">Project: $1,200+</option>
-
-                  {/* Visual Separator (Line) */}
-                  <option disabled>────────────────</option>
-
-                  {/* Maintenance/Monthly Budgets */}
                   <option value="maintenance-basic">
                     Maintenance: Basic ($50 - $100 / mo)
                   </option>
