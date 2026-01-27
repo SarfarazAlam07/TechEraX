@@ -77,7 +77,7 @@ const Navbar = () => {
                   `px-5 py-3 transition text-sm font-medium ${isActive ? "bg-blue-50 text-blue-600" : "hover:bg-gray-50 hover:text-blue-600 text-gray-600"}`
                 }
               >
-                Contact Support
+                Contact Us
               </NavLink>
             </div>
           </div>
