@@ -46,7 +46,7 @@ const Footer = () => {
         {/* Mobile Header (Button) */}
         <button
           onClick={() => toggleSection(id)}
-          className="md:hidden w-full flex justify-between items-center py-4 px-4 mb-2 text-white font-bold text-base bg-white/5 hover:bg-white/10 rounded-xl transition-all text-left"
+          className="md:hidden w-full flex justify-between items-center py-4 px-4 mb-2 text-white font-bold text-base bg-white/10 hover:bg-white/15 rounded-xl transition-all text-left"
         >
           {title}
           <ChevronDown
