@@ -8,7 +8,7 @@ import CTASection from '../components/CTASection'; // Reuse CTA
 
 const Portfolio = () => {
   return (
-    <div className="bg-white pt-[70px]">
+    <div className="bg-white">
       
       <PortfolioHeader />
       <PortfolioGallery />
