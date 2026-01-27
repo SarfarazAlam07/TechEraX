@@ -24,22 +24,28 @@ const ContactFAQ = () => {
   ];
 
   return (
-    <section className="py-20 px-6 md:px-12 bg-slate-50">
+    // FIX 1: 'text-slate-900' add kiya taaki puri section ka text by default Dark ho jaye
+    <section className="py-20 px-6 md:px-12 bg-slate-50 text-slate-900">
       <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-3xl font-bold text-slate-700 mb-8">Before you reach out...</h2>
+        {/* Heading color explicit kar diya */}
+        <h2 className="text-3xl font-bold text-slate-800 mb-8">Before you reach out...</h2>
         
         <div className="space-y-4 text-left">
           {faqs.map((faq, index) => (
-            <div key={index} className="bg-white border border-gray-200  rounded-xl overflow-hidden shadow-sm">
+            <div key={index} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
               <button 
                 onClick={() => toggleAccordion(index)}
-                className="w-full flex justify-between items-center py-4 hover:text-black hover:bg-gray-200  transition-colors "
+                // FIX 2: 
+                // - 'bg-transparent': Global button background hataya
+                // - 'text-slate-800': Text color dark gray kiya (kyunki bg white hai)
+                // - 'px-5': Padding add ki taaki text border se na chipke
+                className="w-full flex justify-between items-center py-4 px-5 bg-transparent text-slate-800 hover:text-blue-600 hover:bg-gray-50 transition-colors text-left"
               >
-                <span className="font-semibold ">{faq.question}</span>
+                <span className="font-semibold">{faq.question}</span>
                 {activeAccordion === index ? (
-                  <ChevronUp className="w-5 h-5 text-blue-600" />
+                  <ChevronUp className="w-5 h-5 text-blue-600 shrink-0" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                  <ChevronDown className="w-5 h-5 text-gray-400 shrink-0" />
                 )}
               </button>
               
@@ -48,6 +54,7 @@ const ContactFAQ = () => {
                   activeAccordion === index ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'
                 }`}
               >
+                {/* FIX 3: Answer text color ensure kiya */}
                 <div className="p-5 pt-0 text-slate-600 text-sm leading-relaxed">
                   {faq.answer}
                 </div>
