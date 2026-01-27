@@ -6,7 +6,7 @@ import AboutStats from '../components/AboutStats';
 import AboutStory from '../components/AboutStory';
 import AboutValues from '../components/AboutValues';
 import AboutFAQ from '../components/AboutFAQ';
-import CTASection from '../components/CTASection'; // Reused CTA
+// import CTASection from '../components/CTASection'; // Reused CTA
 import SEO from '../components/SEO';
 import TeamSection from '../components/TeamSection';
 
@@ -24,7 +24,7 @@ const About = () => {
       <AboutStory />
       <AboutValues />
       <AboutFAQ />
-      <CTASection />
+      {/* <CTASection /> */}
 
     </div>
   );
