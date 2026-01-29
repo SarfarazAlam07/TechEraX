@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';// eslint-disable-line no-unused-vars
-
+import { useData } from "../context/DataContext";
 const AboutStats = () => {
   const stats = [
     { label: "Years Experience", value: "5+" },
