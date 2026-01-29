@@ -1,24 +1,36 @@
-// server/index.js
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 
-// Config Environment Variables
+// Import Routes
+import projectRoutes from './routes/projectRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
+import teamRoutes from './routes/teamRoutes.js';
+import blogRoutes from './routes/blogRoutes.js';
+import inquiryRoutes from './routes/inquiryRoutes.js';
+
+// Config
 dotenv.config();
+connectDB(); // Database se connect karo
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-connectDB();
 
 // Middleware
-app.use(cors()); // Allows frontend to access backend
-app.use(express.json()); // Parses incoming JSON requests
+app.use(cors());
+app.use(express.json()); // JSON data padhne ke liye
+
+// --- API ROUTES ---
+app.use('/api/projects', projectRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/team', teamRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/inquiries', inquiryRoutes);
 
 // Test Route
 app.get('/', (req, res) => {
-  res.send('TechEraX Server is Running with ES Modules! 🚀');
+  res.send('TechEraX Server & API is Running! 🚀');
 });
 
 // Start Server
