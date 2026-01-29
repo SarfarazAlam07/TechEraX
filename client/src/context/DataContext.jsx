@@ -16,7 +16,7 @@ export const DataProvider = ({ children }) => {
   const [services, setServices] = useState([]);
   const [members, setMembers] = useState([]);
   const [blogs, setBlogs] = useState([]);
-  const [inquiries, setInquiries] = useState([]);
+  const [inquiries, setInquiries,inquiriesCount] = useState([]);
   const [aboutStats, setAboutStats] = useState([]);
   const [aboutFaqs, setAboutFaqs] = useState([]);
   
@@ -67,7 +67,7 @@ export const DataProvider = ({ children }) => {
     services, setServices,
     members, setMembers,
     blogs, setBlogs,
-    inquiries, setInquiries,
+    inquiries, setInquiries,inquiriesCount,
     
     aboutStats, setAboutStats,
     aboutFaqs, setAboutFaqs,
