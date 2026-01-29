@@ -10,6 +10,23 @@ export const createInquiry = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+export const updateInquiry = async (req, res) => {
+  try {
+    const { status } = req.body; // Frontend se { status: "Accepted" } aayega
+    
+    const updatedInquiry = await Inquiry.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true } // Return updated doc
+    );
+
+    if (!updatedInquiry) return res.status(404).json({ message: "Inquiry not found" });
+
+    res.status(200).json(updatedInquiry);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 // 2. Get All Inquiries (For Admin Dashboard)
 export const getInquiries = async (req, res) => {
