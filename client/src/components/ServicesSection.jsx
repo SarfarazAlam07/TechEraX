@@ -32,7 +32,6 @@ const iconMap = {
 };
 
 const ServicesSection = () => {
-  // ✅ Context se Data aur Loading nikalo
   const { services, loading } = useData();
 
   const containerVariants = {
@@ -45,7 +44,6 @@ const ServicesSection = () => {
     visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
-  // ✅ Loader Return Karo agar data load ho raha hai
   if (loading) return <Loader />;
 
   return (
@@ -71,61 +69,49 @@ const ServicesSection = () => {
           </p>
         </motion.div>
 
-        {services.length === 0 ? (
-          <p className="text-center text-gray-500">No active services found.</p>
-        ) : (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {services.map((service, index) => {
-              const IconComponent = iconMap[service.icon] || Code2; // ✅ 'icon' key use karo
-
-              return (
-                <motion.div
-                  key={service._id} // ✅ MongoDB _id
-                  variants={itemVariants}
-                  className="bg-blue-100 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 group cursor-pointer flex flex-col overflow-hidden h-full"
-                  whileHover={{ y: -8 }}
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
-                    {/* Placeholder Image agar API se image na ho */}
-                    <div
-                      className={`w-full h-full ${service.colorTheme || "bg-blue-500"} flex items-center justify-center`}
-                    >
-                      <IconComponent className="w-20 h-20 text-white opacity-20" />
-                    </div>
-
-                    <div className="absolute top-6 left-6 z-20">
-                      <div className="bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg group-hover:bg-blue-600 transition-colors duration-300">
-                        <IconComponent className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors duration-300" />
-                      </div>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {services?.map((service) => {
+            const IconComponent = iconMap[service.icon] || Code2;
+            return (
+              <motion.div
+                key={service._id}
+                variants={itemVariants}
+                className="bg-blue-100 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 group cursor-pointer flex flex-col overflow-hidden h-full"
+                whileHover={{ y: -8 }}
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
+                  <div
+                    className={`w-full h-full ${service.colorTheme || "bg-blue-600"} opacity-90`}
+                  />{" "}
+                  {/* Fallback color */}
+                  <div className="absolute top-6 left-6 z-20">
+                    <div className="bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg group-hover:bg-blue-600 transition-colors duration-300">
+                      <IconComponent className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors duration-300" />
                     </div>
                   </div>
-
-                  <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                      {service.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed mb-6 flex-1">
-                      {service.description}
-                    </p>
-                    <a
-                      href="#"
-                      className="flex items-center gap-2 text-blue-600 font-medium group-hover:gap-3 transition-all mt-auto w-fit cursor-pointer"
-                    >
-                      Learn more <ArrowRight className="w-4 h-4" />
-                    </a>
+                </div>
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed mb-6 flex-1">
+                    {service.description}
+                  </p>
+                  <div className="flex items-center gap-2 text-blue-600 font-medium group-hover:gap-3 transition-all mt-auto w-fit cursor-pointer">
+                    Learn more <ArrowRight className="w-4 h-4" />
                   </div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        )}
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
   );

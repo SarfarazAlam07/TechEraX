@@ -11,6 +11,7 @@ import blogRoutes from './routes/blogRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
 import statRoutes from './routes/statRoutes.js';
 import faqRoutes from './routes/faqRoutes.js';
+import authRoutes from './routes/authRoutes.js'
 
 // Config
 dotenv.config();
@@ -31,7 +32,7 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/stats', statRoutes);
 app.use('/api/faqs', faqRoutes);
-
+app.use('/api/auth', authRoutes);
 // Test Route
 app.get('/', (req, res) => {
   res.send('TechEraX Server & API is Running! 🚀');

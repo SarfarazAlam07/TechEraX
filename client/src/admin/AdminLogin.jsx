@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-// Change 1: Added Eye and EyeOff to imports
 import { Lock, Mail, AlertCircle, Loader2, Cpu, Eye, EyeOff } from "lucide-react";
+import axios from "axios";
+import { useData } from "../context/DataContext";
 
 // --- 1. THE 3D TECH LOGO COMPONENT ---
 const TechLogo = () => {
@@ -38,12 +39,11 @@ const TechLogo = () => {
 };
 
 const AdminLogin = () => {
+  const { API_URL } = useData(); // ✅ Backend URL Context se liya
   const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({ email: "", password: "" });
-  
-  // Change 2: State to handle password visibility
-  const [showPassword, setShowPassword] = useState(false);
-  
+  const [showPassword, setShowPassword] = useState(false); // ✅ Toggle State
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -52,19 +52,30 @@ const AdminLogin = () => {
     setError(""); 
   };
 
-  const handleLogin = (e) => {
+  // ✅ Secure Login Function
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
-    setTimeout(() => {
-      if (formData.email === "admin@techerax.com" && formData.password === "admin123") {
+    try {
+      // Backend Call
+      const res = await axios.post(`${API_URL}/auth/login`, formData);
+
+      // Agar login success hua
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
         localStorage.setItem("isAdmin", "true");
         navigate("/admin");
-      } else {
-        setError("Invalid email or password.");
-        setLoading(false);
       }
-    }, 1500);
+    } catch (err) {
+      console.error(err);
+      // Backend se jo error message aaye wo dikhao, nahi to default message
+      const errorMsg = err.response?.data?.message || "Invalid email or password.";
+      setError(errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -131,42 +142,41 @@ const AdminLogin = () => {
               </div>
             </div>
 
-            {/* Password - Change 3: Added Toggle Logic Here */}
-            {/* Password Field */}
-<div className="space-y-2 group">
-  <label className="text-xs uppercase tracking-wider font-bold text-slate-500 ml-1 group-focus-within:text-purple-400 transition-colors">
-    Passcode
-  </label>
-  <div className="relative">
-    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-purple-400 transition-colors" />
-    
-    <input
-      type={showPassword ? "text" : "password"}
-      name="password"
-      placeholder="••••••••"
-      value={formData.password}
-      onChange={handleChange}
-      required
-      className="w-full pl-12 pr-12 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all hover:bg-slate-800"
-    />
-    
-    {/* Updated Eye Button Styling */}
-    <button
-      type="button"
-      onClick={() => setShowPassword(!showPassword)}
-      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-blue-400 focus:outline-none bg-transparent transition-colors cursor-pointer"
-      style={{ background: 'none', border: 'none' }} // Extra safety styles
-    >
-      {showPassword ? (
-        <EyeOff className="w-5 h-5" />
-      ) : (
-        <Eye className="w-5 h-5" />
-      )}
-    </button>
-  </div>
-</div>
+            {/* Password with Eye Toggle */}
+            <div className="space-y-2 group">
+              <label className="text-xs uppercase tracking-wider font-bold text-slate-500 ml-1 group-focus-within:text-purple-400 transition-colors">
+                Passcode
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-purple-400 transition-colors" />
+                
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-12 pr-12 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all hover:bg-slate-800"
+                />
+                
+                {/* Eye Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-blue-400 focus:outline-none bg-transparent transition-colors cursor-pointer"
+                  style={{ background: 'none', border: 'none' }}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
 
-            {/* Error */}
+            {/* Error Message */}
             {error && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -210,4 +220,3 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
-

@@ -1,47 +1,19 @@
 import React from "react";
 import { Clock, ArrowUpRight } from "lucide-react";
+import { useData } from "../context/DataContext"; // ✅ Backend Data
 
 const BlogGrid = () => {
-  const blogs = [
-    {
-      id: 1,
-      title: "React vs Vue: Which one to choose in 2026?",
-      category: "Development",
-      time: "4 min read",
-      image:
-        "https://tse1.mm.bing.net/th/id/OIP.w4IjiUPTFa78oLVGxNYEzgHaEO?rs=1&pid=ImgDetMain&o=7&rm=3",
-      url: "https://www.sitepoint.com/vue-vs-react/",
-    },
-    {
-      id: 2,
-      title: "Top 10 UI Design Trends for Mobile Apps",
-      category: "Design",
-      time: "6 min read",
-      image:
-        "https://images.unsplash.com/photo-1555421689-491a97ff2040?auto=format&fit=crop&w=800&q=80",
-      url: "https://dev-story.com/blog/mobile-app-ui-ux-design-trends/",
-    },
-    {
-      id: 3,
-      title: "SEO Strategies that actually work today",
-      category: "Marketing",
-      time: "3 min read",
-      image:
-        "https://storage.googleapis.com/stateless-ceoblognation-com/2022/02/6f2f3323-seo-ranking-scaled.jpeg",
-      url: "https://seotesting.com/blog/modern-seo-strategies/",
-    },
-  ];
+  const { blogs } = useData();
 
   return (
     <section className="py-12 px-6 md:px-12 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogs.map((blog) => (
+          {blogs?.map((blog) => (
             <div
-              key={blog.id}
+              key={blog._id}
               className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300"
             >
-              {/* Image */}
               <div className="h-56 overflow-hidden relative">
                 <img
                   src={blog.image}
@@ -52,8 +24,6 @@ const BlogGrid = () => {
                   {blog.category}
                 </div>
               </div>
-
-              {/* Content */}
               <div className="p-6">
                 <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
                   <Clock className="w-3 h-3" /> {blog.time}
@@ -63,7 +33,7 @@ const BlogGrid = () => {
                 </h3>
                 <a
                   href={blog.url}
-                  target="_blank" // Naye tab me khulne ke liye (optional)
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 text-sm font-bold text-gray-300 hover:text-blue-600 hover:bg-gray-200 transition-colors px-3 py-2 rounded-md cursor-pointer"
                 >
