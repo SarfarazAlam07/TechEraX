@@ -1,12 +1,17 @@
 import React, { useState } from "react";
-import { Plus, Edit, Trash2, X, Save, Image as ImageIcon, ExternalLink, Github } from "lucide-react";
+import { 
+  Plus, Edit, Trash2, X, Save, 
+  Image as ImageIcon, ExternalLink, Github 
+} from "lucide-react";
 import { useData } from "../context/DataContext";
-import axios from "axios"; // API Calls ke liye
+import axios from "axios"; 
+// ✅ Import Modal
+import ConfirmationModal from "./ConfirmationModal";
 
 const ManageProjects = () => {
   // Global Data se projects aur refreshData nikala
   const { projects, refreshData, API_URL } = useData();
-  
+   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
@@ -19,6 +24,10 @@ const ManageProjects = () => {
     liveLink: "",
     repoLink: ""
   });
+
+  // --- MODAL STATE (Naya Code) ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   // Handle Input
   const handleInputChange = (e) => {
@@ -39,15 +48,24 @@ const ManageProjects = () => {
     setIsFormOpen(true);
   };
 
-  // --- API DELETE ---
-  const handleDelete = async (id) => {
-    if (window.confirm("Delete this project permanently?")) {
-      try {
-        await axios.delete(`${API_URL}/projects/${id}`);
-        refreshData(); // List Refresh karo
-      } catch (error) {
-        alert("Error deleting project!");
-      }
+  // ✅ 1. Trigger Modal (Jab Delete button dabega)
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setIsModalOpen(true);
+  };
+
+  // ✅ 2. Actual Delete Logic (Jab user "Yes" bolega)
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      await axios.delete(`${API_URL}/projects/${deleteId}`);
+      refreshData(); // List Refresh karo
+      setIsModalOpen(false); // Close Modal
+      setDeleteId(null);
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      alert("Error deleting project!");
     }
   };
 
@@ -84,11 +102,11 @@ const ManageProjects = () => {
 
       {/* --- PROJECTS GRID --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.length === 0 ? <p>No projects found.</p> : projects.map((project) => (
+        {projects.length === 0 ? <p className="text-gray-500">No projects found.</p> : projects.map((project) => (
           <div key={project._id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
             <div className="relative h-48 bg-gray-100">
               <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-              <div className="absolute top-2 right-2 bg-red-600  px-2 py-1 rounded text-xs font-bold uppercase tracking-wide">
+              <div className="absolute top-2 right-2 bg-red-600 px-2 py-1 rounded text-xs font-bold uppercase tracking-wide text-white">
                 {project.category}
               </div>
             </div>
@@ -98,7 +116,7 @@ const ManageProjects = () => {
               <p className="text-slate-500 text-sm mb-4">
                 <span className="font-semibold text-slate-700">Tech:</span> {project.techStack}
               </p>
-              
+               
               <div className="flex gap-2 mb-6">
                 {project.liveLink && <ExternalLink size={16} className="text-blue-500" />}
                 {project.repoLink && <Github size={16} className="text-gray-700" />}
@@ -108,7 +126,8 @@ const ManageProjects = () => {
                 <button onClick={() => openEditForm(project)} className="py-2 px-4 rounded-lg bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 flex items-center justify-center gap-2">
                   <Edit size={16} /> Edit
                 </button>
-                <button onClick={() => handleDelete(project._id)} className="py-2 px-4 rounded-lg bg-red-50 text-red-600 font-bold hover:bg-red-100 flex items-center justify-center gap-2">
+                {/* ✅ Delete Button Ab Modal Trigger Karega */}
+                <button onClick={() => handleDeleteClick(project._id)} className="py-2 px-4 rounded-lg bg-red-50 text-red-600 font-bold hover:bg-red-100 flex items-center justify-center gap-2">
                   <Trash2 size={16} /> Delete
                 </button>
               </div>
@@ -200,9 +219,17 @@ const ManageProjects = () => {
           </div>
         </div>
       )}
+
+      {/* ✅ CONFIRMATION MODAL */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Project?"
+        message="Are you sure you want to delete this project? This action cannot be undone."
+      />
     </div>
   );
 };
 
 export default ManageProjects;
-
