@@ -14,7 +14,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message }) => {
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
         onClick={onClose} // Bahar click karne par band ho jayega
       ></div>
-
+{/* jjn */}
       {/* 2. Modal Box (White Content) */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 opacity-100">
         
