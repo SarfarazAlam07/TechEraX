@@ -24,14 +24,43 @@ const ContactForm = () => {
   });
   const [loading, setLoading] = useState(false);
 
+  // --- UPDATED HANDLE CHANGE WITH VALIDATION ---
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // 1. Name Validation: Sirf Letters aur Space allow karega
+    if (name === "name") {
+      // Regex: ^[a-zA-Z\s]*$ matlab sirf alphabets aur space
+      if (!/^[a-zA-Z\s]*$/.test(value)) {
+        return; // Agar digit ya symbol hai to update mat karo
+      }
+    }
+
+    // 2. Phone Validation: Sirf Numbers allow karega
+    if (name === "phone") {
+      // Regex: ^[0-9]*$ matlab sirf digits
+      if (!/^[0-9]*$/.test(value)) {
+        return; // Agar text hai to update mat karo
+      }
+      // Optional: Agar aap chahte ho 10 digit se zyada na likhe
+      if (value.length > 10) {
+        return;
+      }
+    }
+
+    // Baaki fields (Email, Message, etc.) ke liye normal update
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       return alert("Please fill in the required fields.");
+    }
+
+    // Phone validation check before sending
+    if (formData.phone.length < 10) {
+      return alert("Please enter a valid 10-digit phone number.");
     }
 
     try {
@@ -134,7 +163,6 @@ const ContactForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="John"
-                  // Fix: Added 'bg-white' and 'text-slate-900'
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 bg-white text-slate-900 placeholder-slate-400"
                   required
                 />
@@ -149,7 +177,6 @@ const ContactForm = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="hello@gmail.com"
-                  // Fix: Added 'bg-white' and 'text-slate-900'
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 bg-white text-slate-900 placeholder-slate-400"
                   required
                 />
@@ -166,8 +193,8 @@ const ContactForm = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="+91 62XXXXXXX2"
-                  // Fix: Added 'bg-white' and 'text-slate-900'
+                  placeholder="9876543210"
+                  maxLength={10} // HTML level restriction bhi laga di
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 bg-white text-slate-900 placeholder-slate-400"
                   required
                 />
@@ -180,7 +207,6 @@ const ContactForm = () => {
                   name="budget"
                   value={formData.budget}
                   onChange={handleChange}
-                  // Fix: Ensured text color is dark here too
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
                 >
                   <option value="">Select Range</option>
@@ -202,7 +228,6 @@ const ContactForm = () => {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Tell us about your project..."
-                // Fix: Added 'bg-white' and 'text-slate-900'
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 bg-white text-slate-900 placeholder-slate-400 resize-none"
                 required
               ></textarea>
