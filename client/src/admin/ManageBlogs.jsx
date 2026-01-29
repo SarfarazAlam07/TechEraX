@@ -195,9 +195,7 @@ const ManageBlogs = () => {
                 </button>
                 <button
                   onClick={() => handleDelete(faq.id)}
-                  className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
-                >
-                  <Trash2 size={18} />
+                  className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"><Trash2 size={18}/>
                 </button>
               </div>
             </div>
@@ -333,9 +331,18 @@ const ManageBlogs = () => {
           </div>
         </div>
       )}
+      {/* ✅ CONFIRMATION MODAL */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Item?"
+        message={`Are you sure you want to delete this ${activeTab === 'posts' ? 'Post' : 'FAQ'}?`}
+      />
     </div>
   );
 };
 
 export default ManageBlogs;
+
 
