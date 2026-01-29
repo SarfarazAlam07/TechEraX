@@ -3,12 +3,14 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import connectDB from './config/db.js';
 
 // Config Environment Variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+connectDB();
 
 // Middleware
 app.use(cors()); // Allows frontend to access backend
