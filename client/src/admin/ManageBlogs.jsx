@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Plus, Edit, Trash2, X, Save, Clock, HelpCircle } from "lucide-react";
 import { useData } from "../context/DataContext";
+import ConfirmationModal from "./ConfirmationModal";
 import axios from "axios"; // ✅ Import Axios
 
 const ManageBlogs = () => {
@@ -344,5 +345,6 @@ const ManageBlogs = () => {
 };
 
 export default ManageBlogs;
+
 
 
