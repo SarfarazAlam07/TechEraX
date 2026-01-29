@@ -301,7 +301,7 @@ const ManageAbout = () => {
           </div>
         </div>
       )}
-{/* ho jaaa */}
+
       {/* ✅ CONFIRMATION MODAL */}
       <ConfirmationModal
         isOpen={isModalOpen}
@@ -317,3 +317,4 @@ const ManageAbout = () => {
 };
 
 export default ManageAbout;
+// update
