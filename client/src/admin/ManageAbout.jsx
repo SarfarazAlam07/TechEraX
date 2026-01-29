@@ -9,7 +9,9 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { useData } from "../context/DataContext";
-import axios from "axios"; // ✅ Import Axios
+import axios from "axios"; 
+// ✅ Import Modal
+import ConfirmationModal from "./ConfirmationModal";
 
 const ManageAbout = () => {
   const { aboutStats, aboutFaqs, refreshData, API_URL } = useData();
@@ -26,6 +28,10 @@ const ManageAbout = () => {
     section: "about",
   });
 
+  // --- MODAL STATE ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+
   // --- HANDLERS ---
   const handleInputChange = (e, type) => {
     const { name, value } = e.target;
@@ -41,22 +47,31 @@ const ManageAbout = () => {
   };
 
   const openEditForm = (item) => {
-    setEditingId(item._id); // ✅ Use _id
+    setEditingId(item._id);
     if (activeTab === "stats") setStatForm(item);
     else setFaqForm(item);
     setIsFormOpen(true);
   };
 
-  // ✅ DELETE FUNCTION
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure?")) {
-      try {
-        const endpoint = activeTab === "stats" ? "stats" : "faqs";
-        await axios.delete(`${API_URL}/${endpoint}/${id}`);
-        refreshData();
-      } catch (error) {
-        alert("Error deleting item");
-      }
+  // ✅ 1. Trigger Modal
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setIsModalOpen(true);
+  };
+
+  // ✅ 2. Actual Delete Logic (API Call)
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      const endpoint = activeTab === "stats" ? "stats" : "faqs";
+      await axios.delete(`${API_URL}/${endpoint}/${deleteId}`);
+      refreshData(); // List update
+      setIsModalOpen(false); // Close Modal
+      setDeleteId(null);
+    } catch (error) {
+      console.error("Error deleting item", error);
+      alert("Error deleting item");
     }
   };
 
@@ -136,8 +151,9 @@ const ManageAbout = () => {
                 >
                   <Edit size={14} /> Edit
                 </button>
+                {/* ✅ Trigger Modal */}
                 <button
-                  onClick={() => handleDelete(stat._id)}
+                  onClick={() => handleDeleteClick(stat._id)}
                   className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 font-bold hover:bg-red-100 flex items-center justify-center gap-2 text-sm"
                 >
                   <Trash2 size={14} /> Delete
@@ -174,8 +190,9 @@ const ManageAbout = () => {
                 >
                   <Edit size={18} />
                 </button>
+                {/* ✅ Trigger Modal */}
                 <button
-                  onClick={() => handleDelete(faq._id)}
+                  onClick={() => handleDeleteClick(faq._id)}
                   className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
                 >
                   <Trash2 size={18} />
@@ -186,7 +203,7 @@ const ManageAbout = () => {
         </div>
       )}
 
-      {/* MODAL FORM */}
+      {/* MODAL FORM (Add/Edit) */}
       {isFormOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg my-auto">
@@ -284,6 +301,17 @@ const ManageAbout = () => {
           </div>
         </div>
       )}
+
+      {/* ✅ CONFIRMATION MODAL */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Item?"
+        message={`Are you sure you want to delete this ${
+          activeTab === "stats" ? "Statistic" : "FAQ"
+        }?`}
+      />
     </div>
   );
 };
