@@ -11,10 +11,10 @@ import {
   Instagram,
 } from "lucide-react";
 import { useData } from "../context/DataContext";
-import axios from "axios"; // ✅ Axios Import
+import axios from "axios";
 
 const ContactForm = () => {
-  const { API_URL } = useData(); // ✅ URL Context se lo
+  const { API_URL } = useData();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,7 +22,7 @@ const ContactForm = () => {
     budget: "",
     message: "",
   });
-  const [loading, setLoading] = useState(false); // Local Loading
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -36,7 +36,6 @@ const ContactForm = () => {
 
     try {
       setLoading(true);
-      // ✅ Real POST Request
       await axios.post(`${API_URL}/inquiries`, {
         name: formData.name,
         email: formData.email,
@@ -58,22 +57,20 @@ const ContactForm = () => {
   return (
     <section id="contact-section" className="py-12 px-6 md:px-12 bg-white">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
-        {/* Contact Info Card (Same as before) */}
+        {/* Contact Info Card */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           className="bg-slate-900 text-white p-10 rounded-3xl h-full flex flex-col justify-between relative overflow-hidden"
         >
-          {/* ... (Decoration div same as old code) ... */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-[60px] opacity-20" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500 rounded-full blur-[60px] opacity-20" />
 
           <div>
             <h3 className="text-2xl font-bold mb-6">Contact Information</h3>
             <p className="text-slate-400 mb-10">
-              Fill up the form and our Team will get back to you within 24
-              hours.
+              Fill up the form and our Team will get back to you within 24 hours.
             </p>
 
             <div className="space-y-6">
@@ -103,7 +100,6 @@ const ContactForm = () => {
             </div>
           </div>
 
-          {/* Socials */}
           <div className="mt-12">
             <div className="flex gap-4">
               {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
@@ -138,7 +134,8 @@ const ContactForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="John"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500"
+                  // Fix: Added 'bg-white' and 'text-slate-900'
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 bg-white text-slate-900 placeholder-slate-400"
                   required
                 />
               </div>
@@ -152,7 +149,8 @@ const ContactForm = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="hello@gmail.com"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500"
+                  // Fix: Added 'bg-white' and 'text-slate-900'
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 bg-white text-slate-900 placeholder-slate-400"
                   required
                 />
               </div>
@@ -169,7 +167,8 @@ const ContactForm = () => {
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="+91 62XXXXXXX2"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500"
+                  // Fix: Added 'bg-white' and 'text-slate-900'
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 bg-white text-slate-900 placeholder-slate-400"
                   required
                 />
               </div>
@@ -181,7 +180,8 @@ const ContactForm = () => {
                   name="budget"
                   value={formData.budget}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                  // Fix: Ensured text color is dark here too
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
                 >
                   <option value="">Select Range</option>
                   <option value="Below $100">Below $100</option>
@@ -202,7 +202,8 @@ const ContactForm = () => {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Tell us about your project..."
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 resize-none"
+                // Fix: Added 'bg-white' and 'text-slate-900'
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 bg-white text-slate-900 placeholder-slate-400 resize-none"
                 required
               ></textarea>
             </div>
