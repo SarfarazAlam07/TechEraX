@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";// eslint-disable-line no-unused-vars
-import { Lock, Mail, ArrowRight, AlertCircle, Loader2, Cpu } from "lucide-react";
+import { motion } from "framer-motion";
+// Change 1: Added Eye and EyeOff to imports
+import { Lock, Mail, AlertCircle, Loader2, Cpu, Eye, EyeOff } from "lucide-react";
 
 // --- 1. THE 3D TECH LOGO COMPONENT ---
 const TechLogo = () => {
@@ -39,6 +40,10 @@ const TechLogo = () => {
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
+  
+  // Change 2: State to handle password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -126,22 +131,40 @@ const AdminLogin = () => {
               </div>
             </div>
 
-            {/* Password */}
-            <div className="space-y-2 group">
-              <label className="text-xs uppercase tracking-wider font-bold text-slate-500 ml-1 group-focus-within:text-purple-400 transition-colors">Passcode</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-3.5 w-5 h-5 text-slate-500 group-focus-within:text-purple-400 transition-colors" />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all hover:bg-slate-800"
-                />
-              </div>
-            </div>
+            {/* Password - Change 3: Added Toggle Logic Here */}
+            {/* Password Field */}
+<div className="space-y-2 group">
+  <label className="text-xs uppercase tracking-wider font-bold text-slate-500 ml-1 group-focus-within:text-purple-400 transition-colors">
+    Passcode
+  </label>
+  <div className="relative">
+    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-purple-400 transition-colors" />
+    
+    <input
+      type={showPassword ? "text" : "password"}
+      name="password"
+      placeholder="••••••••"
+      value={formData.password}
+      onChange={handleChange}
+      required
+      className="w-full pl-12 pr-12 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all hover:bg-slate-800"
+    />
+    
+    {/* Updated Eye Button Styling */}
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-blue-400 focus:outline-none bg-transparent transition-colors cursor-pointer"
+      style={{ background: 'none', border: 'none' }} // Extra safety styles
+    >
+      {showPassword ? (
+        <EyeOff className="w-5 h-5" />
+      ) : (
+        <Eye className="w-5 h-5" />
+      )}
+    </button>
+  </div>
+</div>
 
             {/* Error */}
             {error && (
@@ -187,3 +210,4 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+
