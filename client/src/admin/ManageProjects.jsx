@@ -73,7 +73,7 @@ const ManageProjects = () => {
           <div key={project.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
             <div className="relative h-48 bg-gray-100">
               <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-              <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-xs font-bold uppercase tracking-wide">
+              <div className="absolute top-2 right-2 bg-red-600  px-2 py-1 rounded text-xs font-bold uppercase tracking-wide">
                 {project.category}
               </div>
             </div>
@@ -215,3 +215,4 @@ const ManageProjects = () => {
 };
 
 export default ManageProjects;
+
