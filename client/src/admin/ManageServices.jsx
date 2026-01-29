@@ -4,10 +4,11 @@ import {
   Monitor, Smartphone, ShoppingCart, Globe, Server, ShieldCheck, Code2, Database, Cloud, PenTool, Megaphone
 } from "lucide-react";
 import { useData } from "../context/DataContext";
-import axios from "axios"; // ✅ Import Axios
+import axios from "axios"; 
+// ✅ Import Modal
+import ConfirmationModal from "./ConfirmationModal";
 
 const ManageServices = () => {
-  // ✅ Data Context
   const { services, refreshData, API_URL } = useData();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -21,6 +22,10 @@ const ManageServices = () => {
     category: "development",
     colorTheme: "bg-blue-600"
   });
+
+  // --- MODAL STATE (Naya Code) ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   // Icon Options
   const iconOptions = [
@@ -49,20 +54,29 @@ const ManageServices = () => {
   };
 
   const openEditForm = (service) => {
-    setEditingId(service._id); // ✅ Use _id
+    setEditingId(service._id);
     setFormData(service);
     setIsFormOpen(true);
   };
 
-  // ✅ DELETE (API)
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this service?")) {
-      try {
-        await axios.delete(`${API_URL}/services/${id}`);
-        refreshData();
-      } catch (error) {
-        alert("Error deleting service");
-      }
+  // ✅ 1. Trigger Modal (Jab Delete button dabega)
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setIsModalOpen(true);
+  };
+
+  // ✅ 2. Actual Delete Logic (Jab user "Yes" bolega)
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      await axios.delete(`${API_URL}/services/${deleteId}`);
+      refreshData(); // List refresh
+      setIsModalOpen(false); // Modal close
+      setDeleteId(null);
+    } catch (error) {
+      console.error("Error deleting service", error);
+      alert("Error deleting service");
     }
   };
 
@@ -119,7 +133,8 @@ const ManageServices = () => {
               <button onClick={() => openEditForm(service)} className="flex-1 py-2 rounded-lg border border-gray-200 text-slate-600 hover:bg-slate-50 flex justify-center items-center gap-2 text-sm font-medium">
                 <Edit size={16} /> Edit
               </button>
-              <button onClick={() => handleDelete(service._id)} className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex justify-center items-center gap-2 text-sm font-medium">
+              {/* ✅ Delete Button Ab Modal Trigger Karega */}
+              <button onClick={() => handleDeleteClick(service._id)} className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex justify-center items-center gap-2 text-sm font-medium">
                 <Trash2 size={16} /> Delete
               </button>
             </div>
@@ -174,6 +189,15 @@ const ManageServices = () => {
           </div>
         </div>
       )}
+
+      {/* ✅ CONFIRMATION MODAL */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Service?"
+        message="Are you sure you want to delete this service? This action cannot be undone."
+      />
     </div>
   );
 };
