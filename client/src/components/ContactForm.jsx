@@ -193,7 +193,7 @@ const ContactForm = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="9876543210"
+                  placeholder="+91 62XXXXXXX2"
                   maxLength={10} // HTML level restriction bhi laga di
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 bg-white text-slate-900 placeholder-slate-400"
                   required
