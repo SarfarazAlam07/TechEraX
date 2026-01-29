@@ -23,6 +23,10 @@ const ManageBlogs = () => {
   });
   const [faqForm, setFaqForm] = useState({ question: "", answer: "" });
 
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+
   const handleInputChange = (e, type) => {
     const { name, value } = e.target;
     if (type === "post") setPostForm({ ...postForm, [name]: value });
@@ -41,6 +45,11 @@ const ManageBlogs = () => {
     setFaqForm({ question: "", answer: "" });
     setIsFormOpen(true);
   };
+  // ✅ Trigger Modal
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setIsModalOpen(true);
+  };
 
   const openEditForm = (item) => {
     setEditingId(item._id || item.id);
@@ -49,20 +58,15 @@ const ManageBlogs = () => {
     setIsFormOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure?")) {
-      if (activeTab === "posts") {
-        try {
-          // ✅ DELETE BLOG (API)
-          await axios.delete(`${API_URL}/blogs/${id}`);
-          refreshData();
-        } catch (error) {
-          alert("Error deleting blog");
-        }
-      } else {
-        setFaqs(faqs.filter((f) => f.id !== id)); // Local delete for FAQ
-      }
+  // ✅ Confirm Logic
+  const confirmDelete = () => {
+    if (activeTab === "posts") {
+      setBlogs(blogs.filter(p => p.id !== deleteId)); 
+    } else {
+      setFaqs(faqs.filter(f => f.id !== deleteId));
     }
+    setIsModalOpen(false);
+    setDeleteId(null);
   };
 
   const handleSubmit = async (e) => {
@@ -334,3 +338,4 @@ const ManageBlogs = () => {
 };
 
 export default ManageBlogs;
+
