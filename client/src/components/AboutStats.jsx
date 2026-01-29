@@ -8,7 +8,7 @@ if (!aboutStats || aboutStats.length === 0) return null;
   return (
     <section className="py-12 border-b border-gray-100 bg-white">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-        {aboutStats((stat, index) => (
+        {.mapaboutStats((stat, index) => (
           <motion.div 
             key={index}
             initial={{ opacity: 0, scale: 0.9 }}
