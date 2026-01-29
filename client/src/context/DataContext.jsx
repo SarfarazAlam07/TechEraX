@@ -8,8 +8,7 @@ export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
   // Backend Base URL (Localhost ke liye)
-  const API_URL = "http://localhost:5000/api";
-
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
   // --- STATES ---
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState([]);
@@ -19,22 +18,21 @@ export const DataProvider = ({ children }) => {
   const [inquiries, setInquiries] = useState([]);
   const [aboutStats, setAboutStats] = useState([]);
   const [aboutFaqs, setAboutFaqs] = useState([]);
-  
-
 
   // --- FETCH DATA FROM SERVER ---
   const refreshData = async () => {
     try {
       // Parallel requests for faster loading
-      const [resProjects, resServices, resTeam, resBlogs, resInquiries] = await Promise.all([
-        axios.get(`${API_URL}/projects`),
-        axios.get(`${API_URL}/services`),
-        axios.get(`${API_URL}/team`),
-        axios.get(`${API_URL}/blogs`),
-        axios.get(`${API_URL}/inquiries`),
-        axios.get(`${API_URL}/stats`), 
-        axios.get(`${API_URL}/faqs?section=about`)
-      ]);
+      const [resProjects, resServices, resTeam, resBlogs, resInquiries] =
+        await Promise.all([
+          axios.get(`${API_URL}/projects`),
+          axios.get(`${API_URL}/services`),
+          axios.get(`${API_URL}/team`),
+          axios.get(`${API_URL}/blogs`),
+          axios.get(`${API_URL}/inquiries`),
+          axios.get(`${API_URL}/stats`),
+          axios.get(`${API_URL}/faqs?section=about`),
+        ]);
 
       // Set Data to State
       setProjects(resProjects.data);
@@ -44,7 +42,6 @@ export const DataProvider = ({ children }) => {
       setInquiries(resInquiries.data);
       setAboutStats(resStats.data);
       setAboutFaqs(resFaqs.data);
-
     } catch (error) {
       console.error("Error connecting to Backend:", error);
     } finally {
@@ -62,22 +59,25 @@ export const DataProvider = ({ children }) => {
     loading,
     API_URL,
     refreshData, // Is function ko Admin pages me call karenge update ke baad
-    
-    projects, setProjects,
-    services, setServices,
-    members, setMembers,
-    blogs, setBlogs,
-    inquiries, setInquiries,
-    
-    aboutStats, setAboutStats,
-    aboutFaqs, setAboutFaqs,
+
+    projects,
+    setProjects,
+    services,
+    setServices,
+    members,
+    setMembers,
+    blogs,
+    setBlogs,
+    inquiries,
+    setInquiries,
+
+    aboutStats,
+    setAboutStats,
+    aboutFaqs,
+    setAboutFaqs,
   };
 
-  return (
-    <DataContext.Provider value={value}>
-      {children}
-    </DataContext.Provider>
-  );
+  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 };
 
 export default DataContext;
