@@ -7,31 +7,36 @@ const DataContext = createContext();
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
-  // Backend Base URL (Localhost ke liye)
+  // Backend Base URL
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  
   // --- STATES ---
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState([]);
   const [services, setServices] = useState([]);
   const [members, setMembers] = useState([]);
   const [blogs, setBlogs] = useState([]);
-  const [inquiries, setInquiries,inquiriesCount] = useState([]);
+  // FIX 1: Removed extra 'inquiriesCount' from useState
+  const [inquiries, setInquiries] = useState([]); 
   const [aboutStats, setAboutStats] = useState([]);
   const [aboutFaqs, setAboutFaqs] = useState([]);
+
+  const totalCount = inquiries.length;
 
   // --- FETCH DATA FROM SERVER ---
   const refreshData = async () => {
     try {
       // Parallel requests for faster loading
-      const [resProjects, resServices, resTeam, resBlogs, resInquiries] =
+      // FIX 2: Added 'resStats' and 'resFaqs' to the destructuring list
+      const [resProjects, resServices, resTeam, resBlogs, resInquiries, resStats, resFaqs] =
         await Promise.all([
           axios.get(`${API_URL}/projects`),
           axios.get(`${API_URL}/services`),
           axios.get(`${API_URL}/team`),
           axios.get(`${API_URL}/blogs`),
           axios.get(`${API_URL}/inquiries`),
-          axios.get(`${API_URL}/stats`),
-          axios.get(`${API_URL}/faqs?section=about`),
+          axios.get(`${API_URL}/stats`),       // Corresponds to resStats
+          axios.get(`${API_URL}/faqs?section=about`), // Corresponds to resFaqs
         ]);
 
       // Set Data to State
@@ -40,8 +45,11 @@ export const DataProvider = ({ children }) => {
       setMembers(resTeam.data);
       setBlogs(resBlogs.data);
       setInquiries(resInquiries.data);
+      
+      // Ab ye variables define ho gaye hain, to error nahi aayega
       setAboutStats(resStats.data);
       setAboutFaqs(resFaqs.data);
+      
     } catch (error) {
       console.error("Error connecting to Backend:", error);
     } finally {
@@ -49,7 +57,7 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  // Initial Load (App start hone par)
+  // Initial Load
   useEffect(() => {
     refreshData();
   }, []);
@@ -58,7 +66,7 @@ export const DataProvider = ({ children }) => {
   const value = {
     loading,
     API_URL,
-    refreshData, // Is function ko Admin pages me call karenge update ke baad
+    refreshData,
 
     projects,
     setProjects,
