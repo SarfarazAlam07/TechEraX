@@ -1,10 +1,24 @@
 import React, { useState } from "react";
-import { 
-  Plus, Edit, Trash2, X, Save, 
-  Monitor, Smartphone, ShoppingCart, Globe, Server, ShieldCheck, Code2, Database, Cloud, PenTool, Megaphone
+import {
+  Plus,
+  Edit,
+  Trash2,
+  X,
+  Save,
+  Monitor,
+  Smartphone,
+  ShoppingCart,
+  Globe,
+  Server,
+  ShieldCheck,
+  Code2,
+  Database,
+  Cloud,
+  PenTool,
+  Megaphone,
 } from "lucide-react";
 import { useData } from "../context/DataContext";
-import axios from "axios"; 
+import axios from "axios";
 // ✅ Import Modal
 import ConfirmationModal from "../components/ConfirmationModal";
 
@@ -20,7 +34,7 @@ const ManageServices = () => {
     description: "",
     icon: "Monitor",
     category: "development",
-    colorTheme: "bg-blue-600"
+    colorTheme: "bg-blue-600",
   });
 
   // --- MODAL STATE (Naya Code) ---
@@ -49,7 +63,13 @@ const ManageServices = () => {
 
   const openAddForm = () => {
     setEditingId(null);
-    setFormData({ title: "", description: "", icon: "Monitor", category: "development", colorTheme: "bg-blue-600" });
+    setFormData({
+      title: "",
+      description: "",
+      icon: "Monitor",
+      category: "development",
+      colorTheme: "bg-blue-600",
+    });
     setIsFormOpen(true);
   };
 
@@ -99,7 +119,7 @@ const ManageServices = () => {
 
   // Helper to render icon
   const renderIcon = (iconName) => {
-    const iconObj = iconOptions.find(i => i.name === iconName);
+    const iconObj = iconOptions.find((i) => i.name === iconName);
     return iconObj ? iconObj.component : <Monitor size={20} />;
   };
 
@@ -107,16 +127,24 @@ const ManageServices = () => {
     <div className="relative">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-slate-800">Manage Services</h2>
-        <button onClick={openAddForm} className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30">
+        <button
+          onClick={openAddForm}
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
+        >
           <Plus size={20} /> Add Service
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (
-          <div key={service._id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full relative overflow-hidden group">
-            <div className={`absolute top-0 left-0 w-full h-1 ${service.colorTheme}`} />
-            
+          <div
+            key={service._id}
+            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full relative overflow-hidden group"
+          >
+            <div
+              className={`absolute top-0 left-0 w-full h-1 ${service.colorTheme}`}
+            />
+
             <div className="flex justify-between items-start mb-4">
               <div className={`p-3 rounded-lg bg-slate-50 text-blue-600`}>
                 {renderIcon(service.icon)}
@@ -126,15 +154,25 @@ const ManageServices = () => {
               </span>
             </div>
 
-            <h3 className="text-xl font-bold text-slate-900 mb-2">{service.title}</h3>
-            <p className="text-slate-500 text-sm mb-6 flex-grow">{service.description}</p>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">
+              {service.title}
+            </h3>
+            <p className="text-slate-500 text-sm mb-6 flex-grow">
+              {service.description}
+            </p>
 
             <div className="flex gap-3 mt-auto pt-4 border-t border-gray-50">
-              <button onClick={() => openEditForm(service)} className="flex-1 py-2 rounded-lg border border-gray-200 text-slate-600 hover:bg-slate-50 flex justify-center items-center gap-2 text-sm font-medium">
+              <button
+                onClick={() => openEditForm(service)}
+                className="flex-1 py-2 rounded-lg border border-gray-200 text-slate-600 hover:bg-slate-50 flex justify-center items-center gap-2 text-sm font-medium"
+              >
                 <Edit size={16} /> Edit
               </button>
               {/* ✅ Delete Button Ab Modal Trigger Karega */}
-              <button onClick={() => handleDeleteClick(service._id)} className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex justify-center items-center gap-2 text-sm font-medium">
+              <button
+                onClick={() => handleDeleteClick(service._id)}
+                className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex justify-center items-center gap-2 text-sm font-medium"
+              >
                 <Trash2 size={16} /> Delete
               </button>
             </div>
@@ -146,44 +184,105 @@ const ManageServices = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
-              <h3 className="text-xl font-bold text-slate-800">{editingId ? "Edit Service" : "Add New Service"}</h3>
-              <button onClick={() => setIsFormOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-xl font-bold text-slate-800">
+                {editingId ? "Edit Service" : "Add New Service"}
+              </h3>
+              <button
+                onClick={() => setIsFormOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
                 <X size={24} />
               </button>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Service Title</label>
-                <input type="text" name="title" required value={formData.title} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Service Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  required
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                <textarea name="description" required rows="3" value={formData.description} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  required
+                  rows="3"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                ></textarea>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                  <select name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
                     <option value="development">Development</option>
                     <option value="design">Design</option>
                     <option value="marketing">Marketing</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Icon</label>
-                  <select name="icon" value={formData.icon} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none">
-                    {iconOptions.map(opt => <option key={opt.name} value={opt.name}>{opt.name}</option>)}
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Icon
+                  </label>
+                  <select
+                    name="icon"
+                    value={formData.icon}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
+                    {iconOptions.map((opt) => (
+                      <option key={opt.name} value={opt.name}>
+                        {opt.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
-               <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Color Theme</label>
-                  <input type="text" name="colorTheme" value={formData.colorTheme} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. bg-blue-600" />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Color Theme
+                </label>
+                <input
+                  type="text"
+                  name="colorTheme"
+                  value={formData.colorTheme}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="e.g. bg-blue-600"
+                />
+              </div>
               <div className="pt-4 flex gap-3 border-t border-gray-100 mt-4">
-                <button type="button" onClick={() => setIsFormOpen(false)} className="flex-1 py-3 bg-gray-100 text-slate-700 font-bold rounded-lg hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors"><Save size={18} /> Save Service</button>
+                <button
+                  type="button"
+                  onClick={() => setIsFormOpen(false)}
+                  className="flex-1 py-3 bg-gray-100 text-slate-700 font-bold rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Save size={18} /> Save Service
+                </button>
               </div>
             </form>
           </div>
