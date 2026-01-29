@@ -5,7 +5,9 @@ import ConfirmationModal from "./ConfirmationModal";
 import axios from "axios"; // ✅ Import Axios
 
 const ManageBlogs = () => {
+  // ❌ setBlogs ki zaroorat nahi kyunki hum API call karke refreshData karenge
   const { blogs, refreshData, API_URL } = useData();
+  
   const [activeTab, setActiveTab] = useState("posts");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -46,6 +48,7 @@ const ManageBlogs = () => {
     setFaqForm({ question: "", answer: "" });
     setIsFormOpen(true);
   };
+
   // ✅ Trigger Modal
   const handleDeleteClick = (id) => {
     setDeleteId(id);
@@ -59,11 +62,19 @@ const ManageBlogs = () => {
     setIsFormOpen(true);
   };
 
-  // ✅ Confirm Logic
-  const confirmDelete = () => {
+  // ✅ Confirm Logic (Backend API Call Fix)
+  const confirmDelete = async () => {
     if (activeTab === "posts") {
-      setBlogs(blogs.filter(p => p.id !== deleteId)); 
+      try {
+        // 🛠️ FIX: Local state update karne ki jagah Server se delete karo
+        await axios.delete(`${API_URL}/blogs/${deleteId}`);
+        refreshData(); // List refresh
+      } catch (error) {
+        console.error("Delete failed", error);
+        alert("Failed to delete blog post.");
+      }
     } else {
+      // FAQs abhi local hain, to local state update sahi hai
       setFaqs(faqs.filter(f => f.id !== deleteId));
     }
     setIsModalOpen(false);
@@ -156,8 +167,9 @@ const ManageBlogs = () => {
                   >
                     <Edit size={16} /> Edit
                   </button>
+                  {/* 🛠️ FIX: Function name corrected (handleDelete -> handleDeleteClick) */}
                   <button
-                    onClick={() => handleDelete(post._id)}
+                    onClick={() => handleDeleteClick(post._id)}
                     className="py-2 px-4 rounded-lg bg-red-50 text-red-600 font-bold hover:bg-red-100 flex items-center justify-center gap-2"
                   >
                     <Trash2 size={16} /> Delete
@@ -194,8 +206,9 @@ const ManageBlogs = () => {
                 >
                   <Edit size={18} />
                 </button>
+                {/* 🛠️ FIX: Function name corrected here too */}
                 <button
-                  onClick={() => handleDelete(faq.id)}
+                  onClick={() => handleDeleteClick(faq.id)}
                   className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"><Trash2 size={18}/>
                 </button>
               </div>
@@ -345,6 +358,3 @@ const ManageBlogs = () => {
 };
 
 export default ManageBlogs;
-
-
-
