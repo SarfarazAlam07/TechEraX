@@ -13,7 +13,9 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { useData } from "../context/DataContext";
-import axios from "axios"; // ✅ Import Axios
+import axios from "axios";
+// ✅ Import Modal
+import ConfirmationModal from "./ConfirmationModal";
 
 const ManageTeam = () => {
   const { members, refreshData, API_URL } = useData();
@@ -29,6 +31,10 @@ const ManageTeam = () => {
     portfolioLink: "",
     socials: { github: "", linkedin: "", instagram: "", twitter: "" },
   });
+
+  // --- MODAL STATE (Naya Code) ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   // --- HANDLERS ---
   const handleInputChange = (e) => {
@@ -57,7 +63,7 @@ const ManageTeam = () => {
   };
 
   const openEditForm = (member) => {
-    setEditingId(member._id); // ✅ Use _id
+    setEditingId(member._id);
     setFormData({
       ...member,
       socials: member.socials || {
@@ -70,15 +76,24 @@ const ManageTeam = () => {
     setIsFormOpen(true);
   };
 
-  // ✅ DELETE (API)
-  const handleDelete = async (id) => {
-    if (window.confirm("Remove this member?")) {
-      try {
-        await axios.delete(`${API_URL}/team/${id}`);
-        refreshData();
-      } catch (error) {
-        alert("Error removing member");
-      }
+  // ✅ 1. Trigger Modal (Jab Delete button dabega)
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setIsModalOpen(true);
+  };
+
+  // ✅ 2. Actual Delete Logic (Jab user "Yes" bolega)
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      await axios.delete(`${API_URL}/team/${deleteId}`);
+      refreshData(); // List Refresh
+      setIsModalOpen(false); // Modal Close
+      setDeleteId(null);
+    } catch (error) {
+      console.error("Error removing member", error);
+      alert("Error removing member");
     }
   };
 
@@ -137,8 +152,9 @@ const ManageTeam = () => {
               >
                 <Edit size={16} /> Edit
               </button>
+              {/* ✅ Delete Button Ab Modal Trigger Karega */}
               <button
-                onClick={() => handleDelete(member._id)}
+                onClick={() => handleDeleteClick(member._id)}
                 className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex justify-center items-center gap-2 font-medium text-sm"
               >
                 <Trash2 size={16} /> Delete
@@ -286,6 +302,15 @@ const ManageTeam = () => {
           </div>
         </div>
       )}
+
+      {/* ✅ CONFIRMATION MODAL */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Remove Member?"
+        message="Are you sure you want to remove this member? This action cannot be undone."
+      />
     </div>
   );
 };
