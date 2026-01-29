@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 const DataContext = createContext();
 
@@ -6,125 +7,77 @@ const DataContext = createContext();
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
-  // --- 1. STATES (Data Store) ---
+  // Backend Base URL (Localhost ke liye)
+  const API_URL = "http://localhost:5000/api";
 
-  // Inquiries (Contact Form Data)
+  // --- STATES ---
+  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [services, setServices] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [inquiries, setInquiries] = useState([]);
+  const [aboutStats, setAboutStats] = useState([]);
+  const [aboutFaqs, setAboutFaqs] = useState([]);
+  
 
-  // Projects (Portfolio Data)
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: "FinTech Dashboard",
-      category: "Web",
-      image:
-        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
-      techStack: "React, Tailwind, Chart.js",
-      liveLink: "#",
-      repoLink: "#",
-    },
-    {
-      id: 2,
-      title: "E-Commerce App",
-      category: "App",
-      image:
-        "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=800&q=80",
-      techStack: "React Native, Firebase",
-      liveLink: "#",
-      repoLink: "#",
-    },
-  ]);
 
-  // Services Data
-  const [services, setServices] = useState([
-    {
-      id: 1,
-      title: "Web Development",
-      description: "Custom websites tailored to your brand needs.",
-      icon: "Monitor",
-      category: "development",
-      colorTheme: "bg-blue-600",
-    },
-    {
-      id: 2,
-      title: "App Development",
-      description: "Native and cross-platform mobile apps.",
-      icon: "Smartphone",
-      category: "development",
-      colorTheme: "bg-green-600",
-    },
-  ]);
+  // --- FETCH DATA FROM SERVER ---
+  const refreshData = async () => {
+    try {
+      // Parallel requests for faster loading
+      const [resProjects, resServices, resTeam, resBlogs, resInquiries] = await Promise.all([
+        axios.get(`${API_URL}/projects`),
+        axios.get(`${API_URL}/services`),
+        axios.get(`${API_URL}/team`),
+        axios.get(`${API_URL}/blogs`),
+        axios.get(`${API_URL}/inquiries`),
+        axios.get(`${API_URL}/stats`), 
+        axios.get(`${API_URL}/faqs?section=about`)
+      ]);
 
-  // Team Members Data
-  const [members, setMembers] = useState([
-    {
-      id: 1,
-      name: "Sarfaraz Alam",
-      role: "Founder || CEO",
-      description: "Passionate about creating seamless web experiences.",
-      image: "/sarfaraz.jpeg",
-      portfolioLink: "https://sarfarazalam.vercel.app/",
-      socials: { twitter: "#", linkedin: "#", github: "#", instagram: "#" },
-    },
-  ]);
+      // Set Data to State
+      setProjects(resProjects.data);
+      setServices(resServices.data);
+      setMembers(resTeam.data);
+      setBlogs(resBlogs.data);
+      setInquiries(resInquiries.data);
+      setAboutStats(resStats.data);
+      setAboutFaqs(resFaqs.data);
 
-  // Blogs Data
-  const [blogs, setBlogs] = useState([
-    {
-      id: 1,
-      title: "React vs Vue: 2026 Guide",
-      category: "Development",
-      time: "4 min read",
-      image:
-        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80",
-      url: "#",
-    },
-  ]);
-
-  // About Page Stats
-  const [aboutStats, setAboutStats] = useState([
-    { id: 1, label: "Years Experience", value: "5+" },
-    { id: 2, label: "Projects Delivered", value: "100+" },
-  ]);
-
-  // About Page FAQs
-  const [aboutFaqs, setAboutFaqs] = useState([
-    {
-      id: 1,
-      question: "What makes TechEraX different?",
-      answer: "We build ecosystems, not just apps.",
-    },
-  ]);
-
-  // --- 2. LOCAL STORAGE (Data Save karne ke liye) ---
-  useEffect(() => {
-    const savedInquiries = localStorage.getItem("inquiries");
-    if (savedInquiries) setInquiries(JSON.parse(savedInquiries));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("inquiries", JSON.stringify(inquiries));
-  }, [inquiries]);
-
-  // --- 3. EXPORT VALUE ---
-  const value = {
-    inquiries,
-    setInquiries,
-    projects,
-    setProjects,
-    services,
-    setServices,
-    members,
-    setMembers,
-    blogs,
-    setBlogs,
-    aboutStats,
-    setAboutStats,
-    aboutFaqs,
-    setAboutFaqs,
+    } catch (error) {
+      console.error("Error connecting to Backend:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
+  // Initial Load (App start hone par)
+  useEffect(() => {
+    refreshData();
+  }, []);
+
+  // --- VALUE OBJECT ---
+  const value = {
+    loading,
+    API_URL,
+    refreshData, // Is function ko Admin pages me call karenge update ke baad
+    
+    projects, setProjects,
+    services, setServices,
+    members, setMembers,
+    blogs, setBlogs,
+    inquiries, setInquiries,
+    
+    aboutStats, setAboutStats,
+    aboutFaqs, setAboutFaqs,
+  };
+
+  return (
+    <DataContext.Provider value={value}>
+      {children}
+    </DataContext.Provider>
+  );
 };
 
 export default DataContext;

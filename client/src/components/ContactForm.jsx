@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";// eslint-disable-line no-unused-vars
+import { motion } from "framer-motion";
 import {
   Mail,
   Phone,
@@ -10,84 +10,70 @@ import {
   Linkedin,
   Instagram,
 } from "lucide-react";
-// ✅ Context Import
-import { useData } from "../context/DataContext"; 
+import { useData } from "../context/DataContext";
+import axios from "axios"; // ✅ Axios Import
 
 const ContactForm = () => {
-  // ✅ Context se 'setInquiries' nikaalein
-  const { inquiries, setInquiries } = useData();
-
-  // ✅ Form State
+  const { API_URL } = useData(); // ✅ URL Context se lo
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     budget: "",
-    message: ""
+    message: "",
   });
+  const [loading, setLoading] = useState(false); // Local Loading
 
-  // ✅ Handle Input Change
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Handle Submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validation (Basic)
     if (!formData.name || !formData.email || !formData.message) {
-      alert("Please fill in the required fields.");
-      return;
+      return alert("Please fill in the required fields.");
     }
 
-    // Create New Inquiry Object
-    const newInquiry = {
-      id: Date.now(),
-      name: formData.name,
-      email: formData.email,
-      // Admin panel me Subject dikhane ke liye Budget use kar rahe hain
-      subject: formData.budget || "General Inquiry", 
-      // Phone number ko message ke saath jod rahe hain taaki admin padh sake
-      message: `Phone: ${formData.phone} \n\nMessage: ${formData.message}`,
-      date: new Date().toLocaleDateString()
-    };
+    try {
+      setLoading(true);
+      // ✅ Real POST Request
+      await axios.post(`${API_URL}/inquiries`, {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: formData.budget || "General Inquiry",
+        message: formData.message,
+      });
 
-    // Update Global State
-    setInquiries([...inquiries, newInquiry]);
-
-    // Reset Form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      budget: "",
-      message: ""
-    });
-
-    alert("Message sent successfully! We will contact you shortly.");
+      alert("Message sent successfully! We will contact you shortly.");
+      setFormData({ name: "", email: "", phone: "", budget: "", message: "" });
+    } catch (error) {
+      console.error("Failed to send message", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <section id="contact-section" className="py-12 px-6 md:px-12 bg-white">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
-        
-        {/* LEFT SIDE: Contact Info Card (No Changes here) */}
+        {/* Contact Info Card (Same as before) */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           className="bg-slate-900 text-white p-10 rounded-3xl h-full flex flex-col justify-between relative overflow-hidden"
         >
-          {/* Background Decoration */}
+          {/* ... (Decoration div same as old code) ... */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-[60px] opacity-20" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500 rounded-full blur-[60px] opacity-20" />
 
           <div>
             <h3 className="text-2xl font-bold mb-6">Contact Information</h3>
-            <p className="text-slate-400 mb-10 leading-relaxed">
-              Fill up the form and our Team will get back to you within 24 hours.
+            <p className="text-slate-400 mb-10">
+              Fill up the form and our Team will get back to you within 24
+              hours.
             </p>
 
             <div className="space-y-6">
@@ -110,18 +96,15 @@ const ContactForm = () => {
                 <div>
                   <p className="text-sm text-slate-400">Address</p>
                   <p className="font-medium text-lg">
-                    Chiksi, Paliganj patna (Bihar)
-                    <br />
-                    Near Himalaya University
+                    Chiksi, Paliganj, Patna (Bihar)
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Social Links */}
+          {/* Socials */}
           <div className="mt-12">
-            <p className="text-sm text-slate-400 mb-4">Follow us</p>
             <div className="flex gap-4">
               {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
                 <a
@@ -136,17 +119,15 @@ const ContactForm = () => {
           </div>
         </motion.div>
 
-        {/* RIGHT SIDE: Form */}
+        {/* Right Side Form */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           className="lg:col-span-2 bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-xl"
         >
-          {/* ✅ Form Tag par onSubmit lagaya */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">
                   Your Name
@@ -157,11 +138,10 @@ const ContactForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="John"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder-gray-400"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500"
                   required
                 />
               </div>
-              {/* Email */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">
                   Email Address
@@ -171,84 +151,74 @@ const ContactForm = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="TechEraX@gmail.com"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder-gray-400"
+                  placeholder="hello@example.com"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500"
                   required
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Phone */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">
-                  Phone *
+                  Phone
                 </label>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="+91 62XXXXXX02"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder-gray-400"
+                  placeholder="+91..."
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500"
                   required
                 />
               </div>
-              {/* Budget */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">
-                  Project Budget
+                  Budget
                 </label>
-                <select 
+                <select
                   name="budget"
                   value={formData.budget}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white outline-none focus:border-blue-500"
                 >
-                  <option value="">Select a Budget Range</option>
-                  <option value="Project: Below $100">Project: Below $100</option>
-                  <option value="Project: $100 - $350">Project: $100 - $350</option>
-                  <option value="Project: $350 - $550">Project: $350 - $550</option>
-                  <option value="Project: $550 - $1,200">
-                    Project: $550 - $1,200
-                  </option>
-                  <option value="Project: $1,200+">Project: $1,200+</option>
-
-                  <option value="Maintenance: Basic">
-                    Maintenance: Basic ($50 - $100 / mo)
-                  </option>
-                  <option value="Maintenance: Standard">
-                    Maintenance: Standard ($100 - $300 / mo)
-                  </option>
-                  <option value="Maintenance: Premium">
-                    Maintenance: Premium ($300+ / mo)
-                  </option>
+                  <option value="">Select Range</option>
+                  <option value="Below $100">Below $100</option>
+                  <option value="$100 - $350">$100 - $350</option>
+                  <option value="$350 - $550">$350 - $550</option>
+                  <option value="$550+">$550+</option>
                 </select>
               </div>
             </div>
 
-            {/* Message */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">
-                Tell us about your project
+                Message
               </label>
               <textarea
                 name="message"
                 rows="5"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="I need a website for my startup..."
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all resize-none placeholder-gray-400"
+                placeholder="Tell us about your project..."
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500 resize-none"
                 required
               ></textarea>
             </div>
 
-            {/* Submit Button */}
-            <button 
+            <button
               type="submit"
-              className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20"
+              disabled={loading}
+              className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-lg"
             >
-              Send Message <Send className="w-4 h-4" />
+              {loading ? (
+                "Sending..."
+              ) : (
+                <>
+                  Send Message <Send className="w-4 h-4" />
+                </>
+              )}
             </button>
           </form>
         </motion.div>

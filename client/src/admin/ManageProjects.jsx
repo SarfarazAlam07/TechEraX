@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Plus, Edit, Trash2, X, Save, Image as ImageIcon, ExternalLink, Github } from "lucide-react";
-// ✅ Context Import
 import { useData } from "../context/DataContext";
+import axios from "axios"; // API Calls ke liye
 
 const ManageProjects = () => {
-  // ✅ Global Data use kar rahe hain
-  const { projects, setProjects } = useData();
+  // Global Data se projects aur refreshData nikala
+  const { projects, refreshData, API_URL } = useData();
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -20,39 +20,54 @@ const ManageProjects = () => {
     repoLink: ""
   });
 
-  // --- HANDLERS ---
+  // Handle Input
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Open Form for Add
   const openAddForm = () => {
     setEditingId(null);
     setFormData({ title: "", category: "Web", image: "", techStack: "", liveLink: "", repoLink: "" });
     setIsFormOpen(true);
   };
 
+  // Open Form for Edit
   const openEditForm = (project) => {
-    setEditingId(project.id);
+    setEditingId(project._id); // MongoDB _id use karta hai
     setFormData(project);
     setIsFormOpen(true);
   };
 
-  const handleDelete = (id) => {
+  // --- API DELETE ---
+  const handleDelete = async (id) => {
     if (window.confirm("Delete this project permanently?")) {
-      // ✅ Dashboard count kam ho jayega
-      setProjects(projects.filter(p => p.id !== id));
+      try {
+        await axios.delete(`${API_URL}/projects/${id}`);
+        refreshData(); // List Refresh karo
+      } catch (error) {
+        alert("Error deleting project!");
+      }
     }
   };
 
-  const handleSubmit = (e) => {
+  // --- API SUBMIT (Create & Update) ---
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      setProjects(projects.map(p => (p.id === editingId ? { ...formData, id: editingId } : p)));
-    } else {
-      // ✅ Dashboard count badh jayega
-      setProjects([...projects, { ...formData, id: Date.now() }]);
+    try {
+      if (editingId) {
+        // Update Existing Project
+        await axios.put(`${API_URL}/projects/${editingId}`, formData);
+      } else {
+        // Create New Project
+        await axios.post(`${API_URL}/projects`, formData);
+      }
+      refreshData(); // Server se naya data lao
+      setIsFormOpen(false); // Modal band karo
+    } catch (error) {
+      console.error("Error saving project:", error);
+      alert("Failed to save project.");
     }
-    setIsFormOpen(false);
   };
 
   return (
@@ -69,8 +84,8 @@ const ManageProjects = () => {
 
       {/* --- PROJECTS GRID --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <div key={project.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
+        {projects.length === 0 ? <p>No projects found.</p> : projects.map((project) => (
+          <div key={project._id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
             <div className="relative h-48 bg-gray-100">
               <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
               <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-xs font-bold uppercase tracking-wide">
@@ -93,7 +108,7 @@ const ManageProjects = () => {
                 <button onClick={() => openEditForm(project)} className="py-2 px-4 rounded-lg bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 flex items-center justify-center gap-2">
                   <Edit size={16} /> Edit
                 </button>
-                <button onClick={() => handleDelete(project.id)} className="py-2 px-4 rounded-lg bg-red-50 text-red-600 font-bold hover:bg-red-100 flex items-center justify-center gap-2">
+                <button onClick={() => handleDelete(project._id)} className="py-2 px-4 rounded-lg bg-red-50 text-red-600 font-bold hover:bg-red-100 flex items-center justify-center gap-2">
                   <Trash2 size={16} /> Delete
                 </button>
               </div>
@@ -121,20 +136,15 @@ const ManageProjects = () => {
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-1">Project Title</label>
                   <input 
-                    type="text" 
-                    name="title" 
-                    required 
-                    value={formData.title} 
-                    onChange={handleInputChange} 
+                    type="text" name="title" required
+                    value={formData.title} onChange={handleInputChange} 
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-1">Category</label>
                   <select 
-                    name="category" 
-                    value={formData.category} 
-                    onChange={handleInputChange} 
+                    name="category" value={formData.category} onChange={handleInputChange} 
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                   >
                     <option value="Web">Web Development</option>
@@ -149,11 +159,8 @@ const ManageProjects = () => {
                 <div className="relative">
                   <ImageIcon className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
                   <input 
-                    type="text" 
-                    name="image" 
-                    required 
-                    value={formData.image} 
-                    onChange={handleInputChange} 
+                    type="text" name="image" required
+                    value={formData.image} onChange={handleInputChange} 
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
                     placeholder="https://..."
                   />
@@ -163,11 +170,8 @@ const ManageProjects = () => {
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Tech Stack</label>
                 <input 
-                  type="text" 
-                  name="techStack" 
-                  required 
-                  value={formData.techStack} 
-                  onChange={handleInputChange} 
+                  type="text" name="techStack" required
+                  value={formData.techStack} onChange={handleInputChange} 
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
                 />
               </div>
@@ -175,25 +179,11 @@ const ManageProjects = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                  <div>
                     <label className="block text-sm font-bold text-slate-700 mb-1">Live Demo Link</label>
-                    <input 
-                      type="text" 
-                      name="liveLink" 
-                      value={formData.liveLink} 
-                      onChange={handleInputChange} 
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
-                      placeholder="#"
-                    />
+                    <input type="text" name="liveLink" value={formData.liveLink} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="#" />
                  </div>
                  <div>
                     <label className="block text-sm font-bold text-slate-700 mb-1">GitHub Repo Link</label>
-                    <input 
-                      type="text" 
-                      name="repoLink" 
-                      value={formData.repoLink} 
-                      onChange={handleInputChange} 
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
-                      placeholder="#"
-                    />
+                    <input type="text" name="repoLink" value={formData.repoLink} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="#" />
                  </div>
               </div>
 

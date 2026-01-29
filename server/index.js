@@ -9,6 +9,8 @@ import serviceRoutes from './routes/serviceRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
+import statRoutes from './routes/statRoutes.js';
+import faqRoutes from './routes/faqRoutes.js';
 
 // Config
 dotenv.config();
@@ -27,6 +29,8 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/team', teamRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/stats', statRoutes);
+app.use('/api/faqs', faqRoutes);
 
 // Test Route
 app.get('/', (req, res) => {

@@ -3,12 +3,12 @@ import {
   Plus, Edit, Trash2, X, Save, 
   Monitor, Smartphone, ShoppingCart, Globe, Server, ShieldCheck, Code2, Database, Cloud, PenTool, Megaphone
 } from "lucide-react";
-// ✅ Context Import
 import { useData } from "../context/DataContext";
+import axios from "axios"; // ✅ Import Axios
 
 const ManageServices = () => {
-  // ✅ Global Data
-  const { services, setServices } = useData();
+  // ✅ Data Context
+  const { services, refreshData, API_URL } = useData();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -22,7 +22,7 @@ const ManageServices = () => {
     colorTheme: "bg-blue-600"
   });
 
-  // Icon Options (Static list is fine locally)
+  // Icon Options
   const iconOptions = [
     { name: "Monitor", component: <Monitor size={20} /> },
     { name: "Smartphone", component: <Smartphone size={20} /> },
@@ -49,25 +49,38 @@ const ManageServices = () => {
   };
 
   const openEditForm = (service) => {
-    setEditingId(service.id);
+    setEditingId(service._id); // ✅ Use _id
     setFormData(service);
     setIsFormOpen(true);
   };
 
-  const handleDelete = (id) => {
+  // ✅ DELETE (API)
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this service?")) {
-      setServices(services.filter(s => s.id !== id));
+      try {
+        await axios.delete(`${API_URL}/services/${id}`);
+        refreshData();
+      } catch (error) {
+        alert("Error deleting service");
+      }
     }
   };
 
-  const handleSubmit = (e) => {
+  // ✅ SUBMIT (API)
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      setServices(services.map(s => (s.id === editingId ? { ...formData, id: editingId } : s)));
-    } else {
-      setServices([...services, { ...formData, id: Date.now() }]);
+    try {
+      if (editingId) {
+        await axios.put(`${API_URL}/services/${editingId}`, formData);
+      } else {
+        await axios.post(`${API_URL}/services`, formData);
+      }
+      refreshData();
+      setIsFormOpen(false);
+    } catch (error) {
+      console.error("Error saving service", error);
+      alert("Failed to save service");
     }
-    setIsFormOpen(false);
   };
 
   // Helper to render icon
@@ -80,17 +93,14 @@ const ManageServices = () => {
     <div className="relative">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-slate-800">Manage Services</h2>
-        <button 
-          onClick={openAddForm} 
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
-        >
+        <button onClick={openAddForm} className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30">
           <Plus size={20} /> Add Service
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (
-          <div key={service.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full relative overflow-hidden group">
+          <div key={service._id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full relative overflow-hidden group">
             <div className={`absolute top-0 left-0 w-full h-1 ${service.colorTheme}`} />
             
             <div className="flex justify-between items-start mb-4">
@@ -109,7 +119,7 @@ const ManageServices = () => {
               <button onClick={() => openEditForm(service)} className="flex-1 py-2 rounded-lg border border-gray-200 text-slate-600 hover:bg-slate-50 flex justify-center items-center gap-2 text-sm font-medium">
                 <Edit size={16} /> Edit
               </button>
-              <button onClick={() => handleDelete(service.id)} className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex justify-center items-center gap-2 text-sm font-medium">
+              <button onClick={() => handleDelete(service._id)} className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex justify-center items-center gap-2 text-sm font-medium">
                 <Trash2 size={16} /> Delete
               </button>
             </div>
@@ -130,37 +140,16 @@ const ManageServices = () => {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Service Title</label>
-                <input 
-                  type="text" 
-                  name="title" 
-                  required 
-                  value={formData.title} 
-                  onChange={handleInputChange} 
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
-                  placeholder="e.g. Web Development"
-                />
+                <input type="text" name="title" required value={formData.title} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                <textarea 
-                  name="description" 
-                  required 
-                  rows="3" 
-                  value={formData.description} 
-                  onChange={handleInputChange} 
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none" 
-                  placeholder="Service description..."
-                ></textarea>
+                <textarea name="description" required rows="3" value={formData.description} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                  <select 
-                    name="category" 
-                    value={formData.category} 
-                    onChange={handleInputChange} 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
-                  >
+                  <select name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none">
                     <option value="development">Development</option>
                     <option value="design">Design</option>
                     <option value="marketing">Marketing</option>
@@ -168,27 +157,14 @@ const ManageServices = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Icon</label>
-                  <select 
-                    name="icon" 
-                    value={formData.icon} 
-                    onChange={handleInputChange} 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
-                  >
+                  <select name="icon" value={formData.icon} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none">
                     {iconOptions.map(opt => <option key={opt.name} value={opt.name}>{opt.name}</option>)}
                   </select>
                 </div>
               </div>
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Color Theme</label>
-                  <input 
-                    type="text" 
-                    name="colorTheme" 
-                    value={formData.colorTheme} 
-                    onChange={handleInputChange} 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
-                    placeholder="e.g. bg-blue-600" 
-                  />
-                  <p className="text-xs text-gray-400 mt-1">Use Tailwind classes like bg-blue-600</p>
+                  <input type="text" name="colorTheme" value={formData.colorTheme} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. bg-blue-600" />
                 </div>
               <div className="pt-4 flex gap-3 border-t border-gray-100 mt-4">
                 <button type="button" onClick={() => setIsFormOpen(false)} className="flex-1 py-3 bg-gray-100 text-slate-700 font-bold rounded-lg hover:bg-gray-200 transition-colors">Cancel</button>

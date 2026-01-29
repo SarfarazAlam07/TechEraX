@@ -1,18 +1,24 @@
 import React from "react";
 import { Trash2, Mail, User, Calendar, MessageSquare } from "lucide-react";
-// ✅ Context Import
-import { useData } from "../context/DataContext";
+import axios from "axios"; // ✅ Import Axios
+import { useData } from "../context/DataContext"; // ✅ Context Import
 
 const ManageInquiries = () => {
-  // ✅ Context se inquiries data aur delete karne ke liye setInquiries le rahe hain
-  const { inquiries, setInquiries } = useData();
+  // ✅ refreshData aur API_URL nikalo
+  const { inquiries, refreshData, API_URL } = useData();
 
-  // --- DELETE FUNCTION ---
-  const handleDelete = (id) => {
+  // --- DELETE FUNCTION (Backend API) ---
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this message?")) {
-      // Filter karke us ID wale message ko hata denge
-      const updatedInquiries = inquiries.filter((inq) => inq.id !== id);
-      setInquiries(updatedInquiries);
+      try {
+        // ✅ Server request
+        await axios.delete(`${API_URL}/inquiries/${id}`);
+        // ✅ List refresh
+        refreshData();
+      } catch (error) {
+        console.error("Error deleting inquiry:", error);
+        alert("Failed to delete message. Try again.");
+      }
     }
   };
 
@@ -36,7 +42,8 @@ const ManageInquiries = () => {
         ) : (
           // Inquiries Loop
           inquiries.map((inq) => (
-            <div key={inq.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
+            // ✅ MongoDB me id nahi _id hoti hai
+            <div key={inq._id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
               
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                 <div className="flex items-center gap-4">
@@ -52,14 +59,16 @@ const ManageInquiries = () => {
                                 <Mail size={12} /> {inq.email}
                             </span>
                             <span className="flex items-center gap-1">
-                                <Calendar size={12} /> {inq.date}
+                                <Calendar size={12} /> 
+                                {/* Date formatting */}
+                                {new Date(inq.date).toLocaleDateString()}
                             </span>
                         </div>
                     </div>
                 </div>
 
                 <button 
-                  onClick={() => handleDelete(inq.id)}
+                  onClick={() => handleDelete(inq._id)} // ✅ Pass _id
                   className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-2 text-sm font-bold"
                   title="Delete Message"
                 >
