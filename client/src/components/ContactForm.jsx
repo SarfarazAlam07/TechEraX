@@ -151,7 +151,7 @@ const ContactForm = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="hello@example.com"
+                  placeholder="hello@gmail.com"
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500"
                   required
                 />
@@ -168,7 +168,7 @@ const ContactForm = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="+91..."
+                  placeholder="+91 62XXXXXXXXX2"
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-blue-500"
                   required
                 />
@@ -181,7 +181,7 @@ const ContactForm = () => {
                   name="budget"
                   value={formData.budget}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white outline-none focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
                 >
                   <option value="">Select Range</option>
                   <option value="Below $100">Below $100</option>
