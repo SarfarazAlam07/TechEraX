@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
   Edit,
@@ -28,6 +28,10 @@ const ManageServices = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
+  // --- ORDERING STATE ---
+  const [localItems, setLocalItems] = useState([]);
+  const [isChanged, setIsChanged] = useState(false);
+
   // Form State
   const [formData, setFormData] = useState({
     title: "",
@@ -35,9 +39,10 @@ const ManageServices = () => {
     icon: "Monitor",
     category: "development",
     colorTheme: "bg-blue-600",
+    order: "", // ✅ Added Order
   });
 
-  // --- MODAL STATE (Naya Code) ---
+  // --- MODAL STATE ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
@@ -56,6 +61,41 @@ const ManageServices = () => {
     { name: "Megaphone", component: <Megaphone size={20} /> },
   ];
 
+  // ✅ 1. SYNC & SORT DATA
+  useEffect(() => {
+    // Sort services by order
+    const sortedServices = [...services].sort((a, b) => (a.order || 0) - (b.order || 0));
+    setLocalItems(sortedServices);
+    setIsChanged(false);
+  }, [services]);
+
+  // ✅ 2. HANDLE ORDER CHANGE (Input Box)
+  const handleOrderChange = (e, id) => {
+    const newOrder = parseInt(e.target.value) || 0;
+    
+    const updatedList = localItems.map((item) => 
+      item._id === id ? { ...item, order: newOrder } : item
+    );
+
+    setLocalItems(updatedList);
+    setIsChanged(true);
+  };
+
+  // ✅ 3. SAVE ORDER (Bulk Update)
+  const saveOrder = async () => {
+    try {
+      const payload = localItems.map(m => ({ _id: m._id, order: m.order }));
+      await axios.put(`${API_URL}/services/reorder`, { items: payload });
+      
+      alert("Order Updated Successfully! 🎉");
+      refreshData();
+      setIsChanged(false);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to save order.");
+    }
+  };
+
   // --- HANDLERS ---
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -69,6 +109,7 @@ const ManageServices = () => {
       icon: "Monitor",
       category: "development",
       colorTheme: "bg-blue-600",
+      order: "",
     });
     setIsFormOpen(true);
   };
@@ -79,20 +120,18 @@ const ManageServices = () => {
     setIsFormOpen(true);
   };
 
-  // ✅ 1. Trigger Modal (Jab Delete button dabega)
   const handleDeleteClick = (id) => {
     setDeleteId(id);
     setIsModalOpen(true);
   };
 
-  // ✅ 2. Actual Delete Logic (Jab user "Yes" bolega)
   const confirmDelete = async () => {
     if (!deleteId) return;
 
     try {
       await axios.delete(`${API_URL}/services/${deleteId}`);
-      refreshData(); // List refresh
-      setIsModalOpen(false); // Modal close
+      refreshData();
+      setIsModalOpen(false);
       setDeleteId(null);
     } catch (error) {
       console.error("Error deleting service", error);
@@ -100,7 +139,6 @@ const ManageServices = () => {
     }
   };
 
-  // ✅ SUBMIT (API)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -127,19 +165,32 @@ const ManageServices = () => {
     <div className="relative">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-slate-800">Manage Services</h2>
-        <button
-          onClick={openAddForm}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
-        >
-          <Plus size={20} /> Add Service
-        </button>
+        
+        <div className="flex gap-3">
+             {/* ✅ SAVE ORDER BUTTON */}
+             {isChanged && (
+                <button 
+                onClick={saveOrder}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-green-700 animate-pulse shadow-lg"
+                >
+                <Save size={20} /> Save Order
+                </button>
+            )}
+
+            <button
+            onClick={openAddForm}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
+            >
+            <Plus size={20} /> Add Service
+            </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {services.map((service) => (
+        {localItems.map((service) => (
           <div
             key={service._id}
-            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full relative overflow-hidden group"
+            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full relative overflow-hidden group hover:shadow-md transition-shadow"
           >
             <div
               className={`absolute top-0 left-0 w-full h-1 ${service.colorTheme}`}
@@ -149,9 +200,23 @@ const ManageServices = () => {
               <div className={`p-3 rounded-lg bg-slate-50 text-blue-600`}>
                 {renderIcon(service.icon)}
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-400 bg-gray-100 px-2 py-1 rounded">
-                {service.category}
-              </span>
+
+               {/* ✅ ORDER INPUT & CATEGORY STACK */}
+               <div className="flex flex-col items-end gap-2">
+                 <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded border border-gray-200">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase">Ord</span>
+                    <input 
+                        type="number" 
+                        value={service.order || 0}
+                        onChange={(e) => handleOrderChange(e, service._id)}
+                        className="w-8 text-center bg-white border border-gray-300 rounded text-xs font-bold text-slate-800 focus:outline-none"
+                    />
+                 </div>
+                 
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                    {service.category}
+                  </span>
+               </div>
             </div>
 
             <h3 className="text-xl font-bold text-slate-900 mb-2">
@@ -168,7 +233,7 @@ const ManageServices = () => {
               >
                 <Edit size={16} /> Edit
               </button>
-              {/* ✅ Delete Button Ab Modal Trigger Karega */}
+              
               <button
                 onClick={() => handleDeleteClick(service._id)}
                 className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex justify-center items-center gap-2 text-sm font-medium"
@@ -222,6 +287,22 @@ const ManageServices = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                 ></textarea>
               </div>
+
+              {/* ✅ Order Input */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Display Order
+                </label>
+                <input
+                  type="number"
+                  name="order"
+                  value={formData.order}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="e.g. 1"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
