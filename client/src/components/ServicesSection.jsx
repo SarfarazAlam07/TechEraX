@@ -88,7 +88,7 @@ const ServicesSection = () => {
                 <div className="relative h-48 overflow-hidden">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
                   <div
-                    className={`w-full h-full ${service.colorTheme || "bg-blue-600"} opacity-90`}
+                    className={`w-full h-full ${service.image || "bg-blue-600"} opacity-90`}
                   />{" "}
                   {/* Fallback color */}
                   <div className="absolute top-6 left-6 z-20">
