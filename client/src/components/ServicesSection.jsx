@@ -82,21 +82,29 @@ const ServicesSection = () => {
               <motion.div
                 key={service._id}
                 variants={itemVariants}
-                className="bg-blue-100 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 group cursor-pointer flex flex-col overflow-hidden h-full"
+                className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 group cursor-pointer flex flex-col overflow-hidden h-full"
                 whileHover={{ y: -8 }}
               >
+                {/* ✅ FIXED IMAGE SECTION START */}
                 <div className="relative h-48 overflow-hidden">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
-                  <div
-                    className={`w-full h-full ${service.image || "bg-blue-600"} opacity-90`}
-                  />{" "}
-                  {/* Fallback color */}
+                  
+                  {/* Yahan <img> tag use kiya hai URL ke liye */}
+                  <img 
+                    src={service.image || "https://via.placeholder.com/400x300?text=Service"}
+                    alt={service.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    onError={(e) => e.target.src = "https://via.placeholder.com/400x300?text=Error"}
+                  />
+
                   <div className="absolute top-6 left-6 z-20">
                     <div className="bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg group-hover:bg-blue-600 transition-colors duration-300">
                       <IconComponent className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors duration-300" />
                     </div>
                   </div>
                 </div>
+                {/* ✅ FIXED IMAGE SECTION END */}
+
                 <div className="p-6 flex-1 flex flex-col">
                   <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                     {service.title}
