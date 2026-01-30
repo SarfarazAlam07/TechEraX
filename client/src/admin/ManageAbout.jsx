@@ -11,7 +11,7 @@ import {
 import { useData } from "../context/DataContext";
 import axios from "axios"; 
 // ✅ Import Modal
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "../componenets/ConfirmationModal";
 
 const ManageAbout = () => {
   const { aboutStats, aboutFaqs, refreshData, API_URL } = useData();
@@ -321,3 +321,4 @@ const ManageAbout = () => {
 };
 
 export default ManageAbout;
+
