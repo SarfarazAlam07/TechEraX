@@ -1,8 +1,9 @@
 import Stat from "../models/Stat.js";
 
+// ✅ 1. Get Stats (Sorted by Order)
 export const getStats = async (req, res) => {
   try {
-    const stats = await Stat.find();
+    const stats = await Stat.find().sort({ order: 1 });
     res.status(200).json(stats);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -32,6 +33,20 @@ export const deleteStat = async (req, res) => {
   try {
     await Stat.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Stat deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ✅ 2. BULK REORDER FUNCTION (New)
+export const updateStatOrder = async (req, res) => {
+  try {
+    const { items } = req.body;
+    const promises = items.map((item) =>
+      Stat.findByIdAndUpdate(item._id, { order: item.order })
+    );
+    await Promise.all(promises);
+    res.status(200).json({ message: "Stats reordered successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
