@@ -6,7 +6,7 @@ import {
 import axios from "axios";
 import { useData } from "../context/DataContext"; 
 // ✅ Import Modal
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "./components/ConfirmationModal";
 
 const ManageInquiries = () => {
   const { inquiries, refreshData, API_URL } = useData();
