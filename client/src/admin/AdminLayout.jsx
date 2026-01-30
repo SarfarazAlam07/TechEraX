@@ -10,7 +10,7 @@ import {
   Layers,
   HelpCircle,
   Menu, // ✅ Mobile Menu Icon
-  X      // ✅ Close Icon
+  X     // ✅ Close Icon
 } from "lucide-react";
 
 const AdminLayout = () => {
@@ -48,12 +48,13 @@ const AdminLayout = () => {
         <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
           TechEraX Admin
         </h1>
-        {/* ✅ Fix: Added 'text-white' specifically to the button */}
+        
+        {/* ✅ FIX: bg-transparent add kiya aur border hataya */}
         <button 
           onClick={() => setIsSidebarOpen(true)} 
-          className="p-2 hover:bg-slate-800 rounded-lg text-white"
+          className="p-2 bg-transparent text-white hover:bg-slate-800 rounded-lg transition-colors border-none outline-none focus:ring-0"
         >
-          <Menu size={24} />
+          <Menu size={28} />
         </button>
       </div>
 
@@ -83,7 +84,10 @@ const AdminLayout = () => {
             TechEraX
           </h1>
           {/* Close Button for Mobile */}
-          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400 hover:text-white">
+          <button 
+            onClick={() => setIsSidebarOpen(false)} 
+            className="lg:hidden p-2 bg-transparent text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+          >
             <X size={24} />
           </button>
         </div>
@@ -95,7 +99,7 @@ const AdminLayout = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={() => setIsSidebarOpen(false)} // ✅ Close sidebar on link click (Mobile)
+                onClick={() => setIsSidebarOpen(false)} 
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                   isActive
                     ? "bg-blue-600 !text-white shadow-lg"
@@ -114,7 +118,7 @@ const AdminLayout = () => {
         <div className="p-4 border-t border-slate-800">
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-3 text-red-400 hover:bg-slate-800 rounded-lg transition-all"
+            className="flex items-center gap-3 w-full px-4 py-3 text-red-400 hover:bg-slate-800 rounded-lg transition-all bg-transparent"
           >
             <LogOut size={20} />
             <span>Logout</span>
