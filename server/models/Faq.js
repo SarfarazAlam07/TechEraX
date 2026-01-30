@@ -7,7 +7,9 @@ const faqSchema = new mongoose.Schema({
     type: String, 
     enum: ['about', 'blog', 'contact'], 
     default: 'about' 
-  }
+  },
+  // ✅ Added Order Field
+  order: { type: Number, default: 100 }
 }, { timestamps: true });
 
 export default mongoose.model("Faq", faqSchema);
