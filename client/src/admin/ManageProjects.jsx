@@ -1,19 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Plus, Edit, Trash2, X, Save, 
   Image as ImageIcon, ExternalLink, Github 
 } from "lucide-react";
 import { useData } from "../context/DataContext";
 import axios from "axios"; 
-// ✅ Import Modal
 import ConfirmationModal from "../components/ConfirmationModal";
 
 const ManageProjects = () => {
-  // Global Data se projects aur refreshData nikala
   const { projects, refreshData, API_URL } = useData();
    
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+
+  // --- ORDERING STATE ---
+  const [localItems, setLocalItems] = useState([]); 
+  const [isChanged, setIsChanged] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -22,46 +24,76 @@ const ManageProjects = () => {
     image: "",
     techStack: "",
     liveLink: "",
-    repoLink: ""
+    repoLink: "",
+    order: "" // ✅ Added Order
   });
 
-  // --- MODAL STATE (Naya Code) ---
+  // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
-  // Handle Input
+  // ✅ 1. SYNC & SORT DATA
+  useEffect(() => {
+    // Sort projects by order
+    const sortedProjects = [...projects].sort((a, b) => (a.order || 0) - (b.order || 0));
+    setLocalItems(sortedProjects);
+    setIsChanged(false);
+  }, [projects]);
+
+  // ✅ 2. HANDLE ORDER CHANGE (Input Box)
+  const handleOrderChange = (e, id) => {
+    const newOrder = parseInt(e.target.value) || 0;
+    
+    const updatedList = localItems.map((item) => 
+      item._id === id ? { ...item, order: newOrder } : item
+    );
+
+    setLocalItems(updatedList);
+    setIsChanged(true);
+  };
+
+  // ✅ 3. SAVE ORDER (Bulk Update)
+  const saveOrder = async () => {
+    try {
+      const payload = localItems.map(m => ({ _id: m._id, order: m.order }));
+      await axios.put(`${API_URL}/projects/reorder`, { items: payload });
+      
+      alert("Order Updated Successfully! 🎉");
+      refreshData();
+      setIsChanged(false);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to save order.");
+    }
+  };
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Open Form for Add
   const openAddForm = () => {
     setEditingId(null);
-    setFormData({ title: "", category: "Web", image: "", techStack: "", liveLink: "", repoLink: "" });
+    setFormData({ title: "", category: "Web", image: "", techStack: "", liveLink: "", repoLink: "", order: "" });
     setIsFormOpen(true);
   };
 
-  // Open Form for Edit
   const openEditForm = (project) => {
-    setEditingId(project._id); // MongoDB _id use karta hai
+    setEditingId(project._id);
     setFormData(project);
     setIsFormOpen(true);
   };
 
-  // ✅ 1. Trigger Modal (Jab Delete button dabega)
   const handleDeleteClick = (id) => {
     setDeleteId(id);
     setIsModalOpen(true);
   };
 
-  // ✅ 2. Actual Delete Logic (Jab user "Yes" bolega)
   const confirmDelete = async () => {
     if (!deleteId) return;
-
     try {
       await axios.delete(`${API_URL}/projects/${deleteId}`);
-      refreshData(); // List Refresh karo
-      setIsModalOpen(false); // Close Modal
+      refreshData(); 
+      setIsModalOpen(false); 
       setDeleteId(null);
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -69,19 +101,16 @@ const ManageProjects = () => {
     }
   };
 
-  // --- API SUBMIT (Create & Update) ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (editingId) {
-        // Update Existing Project
         await axios.put(`${API_URL}/projects/${editingId}`, formData);
       } else {
-        // Create New Project
         await axios.post(`${API_URL}/projects`, formData);
       }
-      refreshData(); // Server se naya data lao
-      setIsFormOpen(false); // Modal band karo
+      refreshData();
+      setIsFormOpen(false);
     } catch (error) {
       console.error("Error saving project:", error);
       alert("Failed to save project.");
@@ -92,19 +121,45 @@ const ManageProjects = () => {
     <div className="relative pb-20">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-slate-800">Manage Projects</h2>
-        <button 
-          onClick={openAddForm} 
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
-        >
-          <Plus size={20} /> Add Project
-        </button>
+        
+        <div className="flex gap-3">
+             {/* ✅ SAVE ORDER BUTTON */}
+             {isChanged && (
+                <button 
+                onClick={saveOrder}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-green-700 animate-pulse shadow-lg"
+                >
+                <Save size={20} /> Save Order
+                </button>
+            )}
+
+            <button 
+            onClick={openAddForm} 
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
+            >
+            <Plus size={20} /> Add Project
+            </button>
+        </div>
       </div>
 
       {/* --- PROJECTS GRID --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.length === 0 ? <p className="text-gray-500">No projects found.</p> : projects.map((project) => (
-          <div key={project._id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
+        {localItems.length === 0 ? <p className="text-gray-500">No projects found.</p> : localItems.map((project) => (
+          <div key={project._id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow relative">
+            
             <div className="relative h-48 bg-gray-100">
+                
+                {/* ✅ ORDER INPUT BOX (Top Left) */}
+                <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/90 px-2 py-1 rounded-lg border border-gray-200 shadow-sm z-10">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase">Ord</span>
+                    <input 
+                        type="number" 
+                        value={project.order || 0}
+                        onChange={(e) => handleOrderChange(e, project._id)}
+                        className="w-8 text-center bg-white border border-gray-300 rounded text-xs font-bold text-slate-800 focus:outline-none"
+                    />
+                </div>
+
               <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
               <div className="absolute top-2 right-2 bg-red-600 px-2 py-1 rounded text-xs font-bold uppercase tracking-wide text-white">
                 {project.category}
@@ -116,7 +171,7 @@ const ManageProjects = () => {
               <p className="text-slate-500 text-sm mb-4">
                 <span className="font-semibold text-slate-700">Tech:</span> {project.techStack}
               </p>
-               
+                
               <div className="flex gap-2 mb-6">
                 {project.liveLink && <ExternalLink size={16} className="text-blue-500" />}
                 {project.repoLink && <Github size={16} className="text-gray-700" />}
@@ -126,7 +181,6 @@ const ManageProjects = () => {
                 <button onClick={() => openEditForm(project)} className="py-2 px-4 rounded-lg bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 flex items-center justify-center gap-2">
                   <Edit size={16} /> Edit
                 </button>
-                {/* ✅ Delete Button Ab Modal Trigger Karega */}
                 <button onClick={() => handleDeleteClick(project._id)} className="py-2 px-4 rounded-lg bg-red-50 text-red-600 font-bold hover:bg-red-100 flex items-center justify-center gap-2">
                   <Trash2 size={16} /> Delete
                 </button>
@@ -195,6 +249,19 @@ const ManageProjects = () => {
                 />
               </div>
               
+               {/* ✅ Order Input */}
+               <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Display Order</label>
+                <input
+                    type="number"
+                    name="order"
+                    value={formData.order}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="e.g. 1"
+                />
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                  <div>
                     <label className="block text-sm font-bold text-slate-700 mb-1">Live Demo Link</label>
