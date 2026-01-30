@@ -11,7 +11,7 @@ import {
 import { useData } from "../context/DataContext";
 import axios from "axios"; 
 // ✅ Import Modal
-import ConfirmationModal from "../components/ConfirmationModal";
+import ConfirmationModal from "./ConfirmationModal";
 
 const ManageAbout = () => {
   const { aboutStats, aboutFaqs, refreshData, API_URL } = useData();
@@ -233,7 +233,8 @@ const ManageAbout = () => {
                       required
                       value={statForm.value}
                       onChange={(e) => handleInputChange(e, "stat")}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      // ✅ Fix: Added bg-white & text-slate-800
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                       placeholder="e.g. 100+"
                     />
                   </div>
@@ -247,7 +248,8 @@ const ManageAbout = () => {
                       required
                       value={statForm.label}
                       onChange={(e) => handleInputChange(e, "stat")}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      // ✅ Fix: Added bg-white & text-slate-800
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                       placeholder="e.g. Projects Delivered"
                     />
                   </div>
@@ -264,7 +266,8 @@ const ManageAbout = () => {
                       required
                       value={faqForm.question}
                       onChange={(e) => handleInputChange(e, "faq")}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      // ✅ Fix: Added bg-white & text-slate-800
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                   </div>
                   <div>
@@ -277,7 +280,8 @@ const ManageAbout = () => {
                       rows="4"
                       value={faqForm.answer}
                       onChange={(e) => handleInputChange(e, "faq")}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg resize-none"
+                      // ✅ Fix: Added bg-white & text-slate-800
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                     ></textarea>
                   </div>
                 </>
@@ -317,4 +321,3 @@ const ManageAbout = () => {
 };
 
 export default ManageAbout;
-// update
