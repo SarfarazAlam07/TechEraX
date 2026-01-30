@@ -1,16 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
   Edit,
   Trash2,
   X,
   Save,
-  Github,
-  Linkedin,
-  Twitter,
-  Instagram,
   Globe,
-  Image as ImageIcon,
+  // Icons for social input placeholders if needed, otherwise removed unused imports
 } from "lucide-react";
 import { useData } from "../context/DataContext";
 import axios from "axios";
@@ -23,18 +19,59 @@ const ManageTeam = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
+  // --- ORDERING STATE ---
+  const [localItems, setLocalItems] = useState([]);
+  const [isChanged, setIsChanged] = useState(false);
+
+  // Form State
   const [formData, setFormData] = useState({
     name: "",
     role: "",
     description: "",
     image: "",
     portfolioLink: "",
+    order: "", // ✅ Added Order field
     socials: { github: "", linkedin: "", instagram: "", twitter: "" },
   });
 
-  // --- MODAL STATE (Naya Code) ---
+  // --- MODAL STATE ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+
+  // ✅ 1. SYNC & SORT DATA
+  useEffect(() => {
+    // Sort members by order
+    const sortedMembers = [...members].sort((a, b) => (a.order || 0) - (b.order || 0));
+    setLocalItems(sortedMembers);
+    setIsChanged(false);
+  }, [members]);
+
+  // ✅ 2. HANDLE ORDER CHANGE (Input Box on Card)
+  const handleOrderChange = (e, id) => {
+    const newOrder = parseInt(e.target.value) || 0;
+
+    const updatedList = localItems.map((item) =>
+      item._id === id ? { ...item, order: newOrder } : item
+    );
+
+    setLocalItems(updatedList);
+    setIsChanged(true);
+  };
+
+  // ✅ 3. SAVE ORDER (Bulk Update)
+  const saveOrder = async () => {
+    try {
+      const payload = localItems.map((m) => ({ _id: m._id, order: m.order }));
+      await axios.put(`${API_URL}/team/reorder`, { items: payload });
+
+      alert("Team Order Updated Successfully! 🎉");
+      refreshData();
+      setIsChanged(false);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to save order.");
+    }
+  };
 
   // --- HANDLERS ---
   const handleInputChange = (e) => {
@@ -57,6 +94,7 @@ const ManageTeam = () => {
       description: "",
       image: "",
       portfolioLink: "",
+      order: "",
       socials: { github: "", linkedin: "", instagram: "", twitter: "" },
     });
     setIsFormOpen(true);
@@ -76,20 +114,18 @@ const ManageTeam = () => {
     setIsFormOpen(true);
   };
 
-  // ✅ 1. Trigger Modal (Jab Delete button dabega)
   const handleDeleteClick = (id) => {
     setDeleteId(id);
     setIsModalOpen(true);
   };
 
-  // ✅ 2. Actual Delete Logic (Jab user "Yes" bolega)
   const confirmDelete = async () => {
     if (!deleteId) return;
 
     try {
       await axios.delete(`${API_URL}/team/${deleteId}`);
-      refreshData(); // List Refresh
-      setIsModalOpen(false); // Modal Close
+      refreshData();
+      setIsModalOpen(false);
       setDeleteId(null);
     } catch (error) {
       console.error("Error removing member", error);
@@ -97,7 +133,6 @@ const ManageTeam = () => {
     }
   };
 
-  // ✅ SUBMIT (API)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -118,20 +153,45 @@ const ManageTeam = () => {
     <div className="relative pb-20">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-slate-800">Team Members</h2>
-        <button
-          onClick={openAddForm}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
-        >
-          <Plus size={20} /> Add Member
-        </button>
+
+        <div className="flex gap-3">
+          {/* ✅ SAVE ORDER BUTTON */}
+          {isChanged && (
+            <button
+              onClick={saveOrder}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-green-700 animate-pulse shadow-lg"
+            >
+              <Save size={20} /> Save Order
+            </button>
+          )}
+
+          <button
+            onClick={openAddForm}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
+          >
+            <Plus size={20} /> Add Member
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {members.map((member) => (
+        {/* ✅ Use localItems (Sorted) instead of members */}
+        {localItems.map((member) => (
           <div
             key={member._id}
-            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow"
+            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow relative"
           >
+            {/* ✅ ORDER INPUT BOX (Top Left) */}
+            <div className="absolute top-3 left-3 flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-lg border border-gray-200 shadow-sm z-10">
+              <span className="text-[10px] font-bold text-gray-400 uppercase">Ord</span>
+              <input
+                type="number"
+                value={member.order || 0}
+                onChange={(e) => handleOrderChange(e, member._id)}
+                className="w-8 text-center bg-white border border-gray-300 rounded text-xs font-bold text-slate-800 focus:outline-none"
+              />
+            </div>
+
             <img
               src={member.image}
               alt={member.name}
@@ -152,7 +212,7 @@ const ManageTeam = () => {
               >
                 <Edit size={16} /> Edit
               </button>
-              {/* ✅ Delete Button Ab Modal Trigger Karega */}
+              
               <button
                 onClick={() => handleDeleteClick(member._id)}
                 className="flex-1 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex justify-center items-center gap-2 font-medium text-sm"
@@ -208,6 +268,22 @@ const ManageTeam = () => {
                   />
                 </div>
               </div>
+              
+              {/* ✅ Order Input in Form */}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">
+                    Display Order
+                </label>
+                <input
+                    type="number"
+                    name="order"
+                    value={formData.order}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="e.g. 1"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">
                   Image URL
@@ -245,7 +321,7 @@ const ManageTeam = () => {
                     name="portfolioLink"
                     value={formData.portfolioLink}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 text-sm border rounded-lg"
+                    className="w-full px-3 py-2 text-sm border rounded-lg bg-white text-slate-800"
                     placeholder="Portfolio URL"
                   />
                   <input
@@ -253,7 +329,7 @@ const ManageTeam = () => {
                     name="github"
                     value={formData.socials.github}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 text-sm border rounded-lg"
+                    className="w-full px-3 py-2 text-sm border rounded-lg bg-white text-slate-800"
                     placeholder="GitHub URL"
                   />
                   <input
@@ -261,7 +337,7 @@ const ManageTeam = () => {
                     name="linkedin"
                     value={formData.socials.linkedin}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 text-sm border rounded-lg"
+                    className="w-full px-3 py-2 text-sm border rounded-lg bg-white text-slate-800"
                     placeholder="LinkedIn URL"
                   />
                   <input
@@ -269,7 +345,7 @@ const ManageTeam = () => {
                     name="instagram"
                     value={formData.socials.instagram}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 text-sm border rounded-lg"
+                    className="w-full px-3 py-2 text-sm border rounded-lg bg-white text-slate-800"
                     placeholder="Instagram URL"
                   />
                   <input
@@ -277,7 +353,7 @@ const ManageTeam = () => {
                     name="twitter"
                     value={formData.socials.twitter}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 text-sm border rounded-lg"
+                    className="w-full px-3 py-2 text-sm border rounded-lg bg-white text-slate-800"
                     placeholder="Twitter URL"
                   />
                 </div>
