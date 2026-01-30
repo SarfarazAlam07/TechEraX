@@ -1,37 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
 import { 
   Trash2, Mail, Calendar, MessageSquare, Phone, 
   CheckCircle, XCircle, Clock 
 } from "lucide-react";
 import axios from "axios";
 import { useData } from "../context/DataContext"; 
+// ✅ Import Modal
+import ConfirmationModal from "./ConfirmationModal";
 
 const ManageInquiries = () => {
   const { inquiries, refreshData, API_URL } = useData();
 
-  // --- DELETE FUNCTION ---
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this message?")) {
-      try {
-        await axios.delete(`${API_URL}/inquiries/${id}`);
-        refreshData();
-      } catch (error) {
-        console.error("Error deleting inquiry:", error);
-        alert("Failed to delete message.");
-      }
+  // --- MODAL STATE (Naya Code) ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+
+  // ✅ 1. Trigger Modal (Jab Delete button dabega)
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setIsModalOpen(true);
+  };
+
+  // ✅ 2. Actual Delete Logic (Jab user "Yes" bolega)
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      await axios.delete(`${API_URL}/inquiries/${deleteId}`);
+      refreshData(); // List refresh
+      setIsModalOpen(false); // Modal close
+      setDeleteId(null);
+    } catch (error) {
+      console.error("Error deleting inquiry:", error);
+      alert("Failed to delete message.");
     }
   };
 
-  // --- NEW FEATURE: UPDATE STATUS (Accept/Reject) ---
+  // --- UPDATE STATUS (Accept/Reject) ---
   const handleStatusUpdate = async (id, newStatus) => {
     try {
-      // Backend par status update bhej rahe hain
-      // Note: Aapke backend me PUT route aur 'status' field hona chahiye
       await axios.put(`${API_URL}/inquiries/${id}`, { status: newStatus });
-      refreshData(); // List refresh karega taaki naya status dikhe
+      refreshData(); 
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update status. Make sure backend supports this.");
+      alert("Failed to update status.");
     }
   };
 
@@ -91,17 +103,14 @@ const ManageInquiries = () => {
                       </span>
                     </h3>
                     
-                    {/* Contact Details (Email & Phone) */}
+                    {/* Contact Details */}
                     <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 mt-1">
                       <span className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
                         <Mail size={12} /> {inq.email}
                       </span>
-                      
-                      {/* ✅ PHONE NUMBER ADDED HERE */}
                       <span className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
                         <Phone size={12} /> {inq.phone}
                       </span>
-
                       <span className="flex items-center gap-1">
                         <Calendar size={12} />
                         {new Date(inq.date).toLocaleDateString()}
@@ -110,8 +119,9 @@ const ManageInquiries = () => {
                   </div>
                 </div>
 
+                {/* ✅ Delete Button Ab Modal Trigger Karega */}
                 <button
-                  onClick={() => handleDelete(inq._id)}
+                  onClick={() => handleDeleteClick(inq._id)}
                   className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-2 text-sm font-bold"
                   title="Delete Message"
                 >
@@ -121,7 +131,6 @@ const ManageInquiries = () => {
 
               {/* MESSAGE BOX */}
               <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 mb-4">
-                {/* ✅ Changed Subject to Budget */}
                 <h4 className="font-bold text-slate-700 mb-2 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                   Budget: <span className="text-blue-600">{inq.subject}</span>
@@ -131,7 +140,7 @@ const ManageInquiries = () => {
                 </p>
               </div>
 
-              {/* ✅ ADMIN ACTIONS (Accept / Reject) */}
+              {/* ADMIN ACTIONS */}
               <div className="flex gap-3 border-t border-gray-100 pt-4">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider self-center mr-auto">
                   Action:
@@ -169,6 +178,15 @@ const ManageInquiries = () => {
           ))
         )}
       </div>
+
+      {/* ✅ CONFIRMATION MODAL */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Inquiry?"
+        message="Are you sure you want to delete this message permanently? This cannot be undone."
+      />
     </div>
   );
 };
