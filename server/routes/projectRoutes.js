@@ -3,16 +3,18 @@ import {
   createProject, 
   deleteProject, 
   getProjects, 
-  updateProject 
+  updateProject,
+  updateProjectOrder // ✅ Import New Controller
 } from "../controllers/projectController.js";
 
 const router = express.Router();
 
-// http://localhost:5000/api/projects
 router.get("/", getProjects);
 router.post("/", createProject);
 
-// http://localhost:5000/api/projects/:id
+// ✅ REORDER ROUTE (Isse /:id se PEHLE rakhna zaroori hai)
+router.put("/reorder", updateProjectOrder);
+
 router.put("/:id", updateProject);
 router.delete("/:id", deleteProject);
 
