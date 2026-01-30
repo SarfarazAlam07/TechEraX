@@ -11,7 +11,9 @@ const memberSchema = new mongoose.Schema({
     linkedin: { type: String, default: "" },
     instagram: { type: String, default: "" },
     twitter: { type: String, default: "" }
-  }
+  },
+  // ✅ Added Order Field
+  order: { type: Number, default: 100 }
 }, { timestamps: true });
 
 export default mongoose.model("Member", memberSchema);
