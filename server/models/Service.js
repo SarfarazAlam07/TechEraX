@@ -10,6 +10,7 @@ const serviceSchema = new mongoose.Schema({
     default: 'development' 
   },
   image: { type: String, required: true },
+  link: { type: String, default: "" },
   // ✅ Added Order Field
   order: { type: Number, default: 100 }
 }, { timestamps: true });
