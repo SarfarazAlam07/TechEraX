@@ -247,7 +247,7 @@ const ManageAbout = () => {
                       required
                       value={statForm.label}
                       onChange={(e) => handleInputChange(e, "stat")}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                       placeholder="e.g. Projects Delivered"
                     />
                   </div>
@@ -264,7 +264,7 @@ const ManageAbout = () => {
                       required
                       value={faqForm.question}
                       onChange={(e) => handleInputChange(e, "faq")}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                   </div>
                   <div>
@@ -277,7 +277,7 @@ const ManageAbout = () => {
                       rows="4"
                       value={faqForm.answer}
                       onChange={(e) => handleInputChange(e, "faq")}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg resize-none"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                     ></textarea>
                   </div>
                 </>
@@ -317,5 +317,6 @@ const ManageAbout = () => {
 };
 
 export default ManageAbout;
+
 
 
