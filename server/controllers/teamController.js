@@ -3,7 +3,6 @@ import Member from "../models/Member.js";
 // ✅ 1. Get Members (Sorted by Order)
 export const getMembers = async (req, res) => {
   try {
-    // Pehle 'createdAt' tha, ab 'order' se sort hoga
     const members = await Member.find().sort({ order: 1 });
     res.status(200).json(members);
   } catch (error) {
@@ -43,16 +42,14 @@ export const deleteMember = async (req, res) => {
   }
 };
 
-// ✅ 2. BULK REORDER FUNCTION (New)
+// ✅ 2. BULK REORDER FUNCTION
 export const updateMemberOrder = async (req, res) => {
   try {
-    const { items } = req.body; // Expecting array: [{_id, order}, ...]
-    
+    const { items } = req.body;
     const promises = items.map((item) =>
       Member.findByIdAndUpdate(item._id, { order: item.order })
     );
     await Promise.all(promises);
-
     res.status(200).json({ message: "Members reordered successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
