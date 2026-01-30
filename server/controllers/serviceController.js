@@ -42,7 +42,7 @@ export const deleteService = async (req, res) => {
   }
 };
 
-// ✅ 2. BULK REORDER FUNCTION (New)
+// ✅ 2. BULK REORDER FUNCTION
 export const updateServiceOrder = async (req, res) => {
   try {
     const { items } = req.body;
