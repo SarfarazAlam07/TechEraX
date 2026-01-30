@@ -1,8 +1,10 @@
 import Member from "../models/Member.js";
 
+// ✅ 1. Get Members (Sorted by Order)
 export const getMembers = async (req, res) => {
   try {
-    const members = await Member.find().sort({ createdAt: -1 });
+    // Pehle 'createdAt' tha, ab 'order' se sort hoga
+    const members = await Member.find().sort({ order: 1 });
     res.status(200).json(members);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -36,6 +38,22 @@ export const deleteMember = async (req, res) => {
   try {
     await Member.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Team member removed" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ✅ 2. BULK REORDER FUNCTION (New)
+export const updateMemberOrder = async (req, res) => {
+  try {
+    const { items } = req.body; // Expecting array: [{_id, order}, ...]
+    
+    const promises = items.map((item) =>
+      Member.findByIdAndUpdate(item._id, { order: item.order })
+    );
+    await Promise.all(promises);
+
+    res.status(200).json({ message: "Members reordered successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
