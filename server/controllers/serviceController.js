@@ -1,16 +1,15 @@
 import Service from "../models/Service.js";
 
-// Get All Services
+// ✅ 1. Get Services (Sorted by Order)
 export const getServices = async (req, res) => {
   try {
-    const services = await Service.find().sort({ createdAt: -1 });
+    const services = await Service.find().sort({ order: 1 });
     res.status(200).json(services);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Create Service
 export const createService = async (req, res) => {
   try {
     const newService = new Service(req.body);
@@ -21,7 +20,6 @@ export const createService = async (req, res) => {
   }
 };
 
-// Update Service
 export const updateService = async (req, res) => {
   try {
     const updatedService = await Service.findByIdAndUpdate(
@@ -35,11 +33,24 @@ export const updateService = async (req, res) => {
   }
 };
 
-// Delete Service
 export const deleteService = async (req, res) => {
   try {
     await Service.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Service deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ✅ 2. BULK REORDER FUNCTION (New)
+export const updateServiceOrder = async (req, res) => {
+  try {
+    const { items } = req.body;
+    const promises = items.map((item) =>
+      Service.findByIdAndUpdate(item._id, { order: item.order })
+    );
+    await Promise.all(promises);
+    res.status(200).json({ message: "Services reordered successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
