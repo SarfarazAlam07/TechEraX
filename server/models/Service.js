@@ -9,7 +9,7 @@ const serviceSchema = new mongoose.Schema({
     enum: ['development', 'design', 'marketing'], 
     default: 'development' 
   },
-  colorTheme: { type: String, default: 'bg-blue-600' },
+  image: { type: String, required: true },
   // ✅ Added Order Field
   order: { type: Number, default: 100 }
 }, { timestamps: true });
