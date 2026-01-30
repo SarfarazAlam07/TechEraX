@@ -10,13 +10,13 @@ import {
   Layers,
   HelpCircle,
   Menu, // ✅ Mobile Menu Icon
-  X     // ✅ Close Icon
+  X      // ✅ Close Icon
 } from "lucide-react";
 
 const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+   
   // ✅ State for Mobile Sidebar Toggle
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -48,7 +48,11 @@ const AdminLayout = () => {
         <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
           TechEraX Admin
         </h1>
-        <button onClick={() => setIsSidebarOpen(true)} className="p-2 hover:bg-slate-800 rounded-lg">
+        {/* ✅ Fix: Added 'text-white' specifically to the button */}
+        <button 
+          onClick={() => setIsSidebarOpen(true)} 
+          className="p-2 hover:bg-slate-800 rounded-lg text-white"
+        >
           <Menu size={24} />
         </button>
       </div>
