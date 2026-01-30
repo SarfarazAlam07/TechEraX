@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Plus, Edit, Trash2, X, Save, 
   Clock, HelpCircle, Image as ImageIcon, ExternalLink 
@@ -16,21 +16,75 @@ const ManageBlogs = () => {
 
   // Local FAQs 
   const [faqs, setFaqs] = useState([
-    { id: 1, question: "How long does it take?", answer: "2-4 weeks usually." },
+    { id: 1, question: "How long does it take?", answer: "2-4 weeks usually.", order: 1 },
   ]);
 
+  // --- ORDERING STATE ---
+  const [localItems, setLocalItems] = useState([]); 
+  const [isChanged, setIsChanged] = useState(false);
+
+  // --- FORMS ---
   const [postForm, setPostForm] = useState({
     title: "",
     category: "Development",
     time: "",
     image: "",
     url: "",
+    order: "" // ✅ Added Order
   });
-  const [faqForm, setFaqForm] = useState({ question: "", answer: "" });
+  const [faqForm, setFaqForm] = useState({ 
+    question: "", 
+    answer: "", 
+    order: "" // ✅ Added Order
+  });
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+
+  // ✅ 1. SYNC & SORT DATA
+  useEffect(() => {
+    const data = activeTab === "posts" ? blogs : faqs;
+    // Sort by order
+    const sortedData = [...data].sort((a, b) => (a.order || 0) - (b.order || 0));
+    setLocalItems(sortedData);
+    setIsChanged(false);
+  }, [blogs, faqs, activeTab]);
+
+  // ✅ 2. HANDLE ORDER CHANGE (Input Box)
+  const handleOrderChange = (e, id) => {
+    const newOrder = parseInt(e.target.value) || 0;
+    
+    // Determine ID field (_id for Mongo, id for local)
+    const updatedList = localItems.map((item) => {
+      const itemId = item._id || item.id;
+      return itemId === id ? { ...item, order: newOrder } : item;
+    });
+
+    setLocalItems(updatedList);
+    setIsChanged(true);
+  };
+
+  // ✅ 3. SAVE ORDER (Bulk Update)
+  const saveOrder = async () => {
+    try {
+      if (activeTab === "posts") {
+        // API Call for Blogs
+        const payload = localItems.map(m => ({ _id: m._id, order: m.order }));
+        await axios.put(`${API_URL}/blogs/reorder`, { items: payload });
+        refreshData();
+      } else {
+        // Local Update for FAQs
+        setFaqs(localItems);
+      }
+      
+      alert("Order Updated Successfully! 🎉");
+      setIsChanged(false);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to save order.");
+    }
+  };
 
   const handleInputChange = (e, type) => {
     const { name, value } = e.target;
@@ -40,8 +94,8 @@ const ManageBlogs = () => {
 
   const openAddForm = () => {
     setEditingId(null);
-    setPostForm({ title: "", category: "Development", time: "", image: "", url: "" });
-    setFaqForm({ question: "", answer: "" });
+    setPostForm({ title: "", category: "Development", time: "", image: "", url: "", order: "" });
+    setFaqForm({ question: "", answer: "", order: "" });
     setIsFormOpen(true);
   };
 
@@ -99,6 +153,7 @@ const ManageBlogs = () => {
     <div className="relative pb-20">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <h2 className="text-3xl font-bold text-slate-800">Manage Blog Page</h2>
+        
         <div className="flex bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
           <button
             onClick={() => setActiveTab("posts")}
@@ -113,19 +168,44 @@ const ManageBlogs = () => {
             Blog FAQs
           </button>
         </div>
-        <button
-          onClick={openAddForm}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
-        >
-          <Plus size={20} /> Add {activeTab === "posts" ? "Post" : "FAQ"}
-        </button>
+
+        <div className="flex gap-3">
+             {/* ✅ SAVE ORDER BUTTON */}
+             {isChanged && (
+                <button 
+                onClick={saveOrder}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-green-700 animate-pulse shadow-lg"
+                >
+                <Save size={20} /> Save Order
+                </button>
+            )}
+            
+            <button
+            onClick={openAddForm}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
+            >
+            <Plus size={20} /> Add {activeTab === "posts" ? "Post" : "FAQ"}
+            </button>
+        </div>
       </div>
 
       {activeTab === "posts" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogs.map((post) => (
-            <div key={post._id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
+          {localItems.map((post) => (
+            <div key={post._id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow relative">
               <div className="relative h-48 bg-gray-100">
+                
+                {/* ✅ ORDER INPUT BOX (Top Left) */}
+                <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/90 px-2 py-1 rounded-lg border border-gray-200 shadow-sm z-10">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase">Ord</span>
+                    <input 
+                        type="number" 
+                        value={post.order || 0}
+                        onChange={(e) => handleOrderChange(e, post._id)}
+                        className="w-8 text-center bg-white border border-gray-300 rounded text-xs font-bold text-slate-800 focus:outline-none"
+                    />
+                </div>
+
                 <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
                 <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-xs font-bold text-slate-800">
                   {post.category}
@@ -152,14 +232,25 @@ const ManageBlogs = () => {
 
       {activeTab === "faqs" && (
         <div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
-          {faqs.map((faq) => (
+          {localItems.map((faq) => (
             <div key={faq.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-start gap-4">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-3 mb-2">
+                   {/* ✅ ORDER INPUT BOX (Inline) */}
+                   <div className="flex flex-col items-center justify-center bg-gray-50 px-1 py-1 rounded border border-gray-200 h-full">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase leading-none mb-1">Ord</span>
+                    <input 
+                        type="number" 
+                        value={faq.order || 0}
+                        onChange={(e) => handleOrderChange(e, faq.id)}
+                        className="w-8 text-center bg-white border border-gray-300 rounded text-xs font-bold text-slate-800 focus:outline-none"
+                    />
+                  </div>
+
                   <HelpCircle className="text-blue-500 w-5 h-5 flex-shrink-0" />
                   <h3 className="font-bold text-slate-800 text-lg">{faq.question}</h3>
                 </div>
-                <p className="text-slate-500 text-sm leading-relaxed pl-7">{faq.answer}</p>
+                <p className="text-slate-500 text-sm leading-relaxed pl-14">{faq.answer}</p>
               </div>
               <div className="flex flex-col gap-2">
                 <button onClick={() => openEditForm(faq)} className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"><Edit size={18} /></button>
@@ -187,7 +278,6 @@ const ManageBlogs = () => {
                       name="title"
                       value={postForm.title}
                       onChange={(e) => handleInputChange(e, "post")}
-                      // ✅ Fix: Added bg-white & text-slate-800
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                       required
                     />
@@ -198,7 +288,6 @@ const ManageBlogs = () => {
                       name="category"
                       value={postForm.category}
                       onChange={(e) => handleInputChange(e, "post")}
-                      // ✅ Fix: Added bg-white & text-slate-800
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                       required
                     />
@@ -209,9 +298,20 @@ const ManageBlogs = () => {
                       name="time"
                       value={postForm.time}
                       onChange={(e) => handleInputChange(e, "post")}
-                      // ✅ Fix: Added bg-white & text-slate-800
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                       placeholder="e.g. 5 min read"
+                    />
+                  </div>
+                  {/* ✅ Order Input */}
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1">Display Order</label>
+                    <input
+                      name="order"
+                      type="number"
+                      value={postForm.order}
+                      onChange={(e) => handleInputChange(e, "post")}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                      placeholder="e.g. 1"
                     />
                   </div>
                   <div>
@@ -220,7 +320,6 @@ const ManageBlogs = () => {
                       name="image"
                       value={postForm.image}
                       onChange={(e) => handleInputChange(e, "post")}
-                      // ✅ Fix: Added bg-white & text-slate-800
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                       required
                     />
@@ -231,7 +330,6 @@ const ManageBlogs = () => {
                       name="url"
                       value={postForm.url}
                       onChange={(e) => handleInputChange(e, "post")}
-                      // ✅ Fix: Added bg-white & text-slate-800
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                       required
                     />
@@ -245,7 +343,6 @@ const ManageBlogs = () => {
                       name="question"
                       value={faqForm.question}
                       onChange={(e) => handleInputChange(e, "faq")}
-                      // ✅ Fix: Added bg-white & text-slate-800
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                       required
                     />
@@ -256,10 +353,21 @@ const ManageBlogs = () => {
                       name="answer"
                       value={faqForm.answer}
                       onChange={(e) => handleInputChange(e, "faq")}
-                      // ✅ Fix: Added bg-white & text-slate-800
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                       required
                       rows="4"
+                    />
+                  </div>
+                   {/* ✅ Order Input */}
+                   <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1">Display Order</label>
+                    <input
+                      name="order"
+                      type="number"
+                      value={faqForm.order}
+                      onChange={(e) => handleInputChange(e, "faq")}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                      placeholder="e.g. 1"
                     />
                   </div>
                 </>
