@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom"; // ✅ Import Link
 import {
   Smartphone,
   Monitor,
@@ -18,17 +19,8 @@ import { useData } from "../context/DataContext";
 import Loader from "./Loader";
 
 const iconMap = {
-  Monitor,
-  Smartphone,
-  ShoppingCart,
-  Globe,
-  Server,
-  ShieldCheck,
-  Code2,
-  Database,
-  Cloud,
-  PenTool,
-  Megaphone,
+  Monitor, Smartphone, ShoppingCart, Globe, Server, ShieldCheck,
+  Code2, Database, Cloud, PenTool, Megaphone,
 };
 
 const ServicesSection = () => {
@@ -85,11 +77,11 @@ const ServicesSection = () => {
                 className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 group cursor-pointer flex flex-col overflow-hidden h-full"
                 whileHover={{ y: -8 }}
               >
-                {/* ✅ FIXED IMAGE SECTION START */}
+                {/* IMAGE SECTION */}
                 <div className="relative h-48 overflow-hidden">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
                   
-                  {/* Yahan <img> tag use kiya hai URL ke liye */}
+                  {/* ✅ Image Fix: Using <img> tag correctly */}
                   <img 
                     src={service.image || "https://via.placeholder.com/400x300?text=Service"}
                     alt={service.title}
@@ -103,7 +95,6 @@ const ServicesSection = () => {
                     </div>
                   </div>
                 </div>
-                {/* ✅ FIXED IMAGE SECTION END */}
 
                 <div className="p-6 flex-1 flex flex-col">
                   <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
@@ -112,9 +103,14 @@ const ServicesSection = () => {
                   <p className="text-gray-600 leading-relaxed mb-6 flex-1">
                     {service.description}
                   </p>
-                  <div className="flex items-center gap-2 text-blue-600 font-medium group-hover:gap-3 transition-all mt-auto w-fit cursor-pointer">
+                  
+                  {/* ✅ Change: 'div' changed to 'Link' so it's clickable */}
+                  <Link 
+                    to={service.link || "#"} 
+                    className="flex items-center gap-2 text-blue-600 font-medium group-hover:gap-3 transition-all mt-auto w-fit cursor-pointer"
+                  >
                     Learn more <ArrowRight className="w-4 h-4" />
-                  </div>
+                  </Link>
                 </div>
               </motion.div>
             );
