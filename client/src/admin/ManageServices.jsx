@@ -16,10 +16,12 @@ import {
   Cloud,
   PenTool,
   Megaphone,
-  Image as ImageIcon, // ✅ Image Icon Import
+  Image as ImageIcon,
+  Link as LinkIcon, // ✅ Icon for Link
 } from "lucide-react";
 import { useData } from "../context/DataContext";
 import axios from "axios";
+// ✅ Import Modal
 import ConfirmationModal from "../components/ConfirmationModal";
 
 const ManageServices = () => {
@@ -32,14 +34,15 @@ const ManageServices = () => {
   const [localItems, setLocalItems] = useState([]);
   const [isChanged, setIsChanged] = useState(false);
 
-  // --- FORM STATE ---
+  // Form State
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     icon: "Monitor",
     category: "development",
-    image: "", // ✅ Changed colorTheme to image
-    order: "", 
+    image: "", // Changed colorTheme to image
+    order: "",
+    link: "", // ✅ Added Link Field
   });
 
   // --- MODAL STATE ---
@@ -63,26 +66,30 @@ const ManageServices = () => {
 
   // ✅ 1. SYNC & SORT DATA
   useEffect(() => {
+    // Sort services by order
     const sortedServices = [...services].sort((a, b) => (a.order || 0) - (b.order || 0));
     setLocalItems(sortedServices);
     setIsChanged(false);
   }, [services]);
 
-  // ✅ 2. HANDLE ORDER CHANGE
+  // ✅ 2. HANDLE ORDER CHANGE (Input Box)
   const handleOrderChange = (e, id) => {
     const newOrder = parseInt(e.target.value) || 0;
+    
     const updatedList = localItems.map((item) => 
       item._id === id ? { ...item, order: newOrder } : item
     );
+
     setLocalItems(updatedList);
     setIsChanged(true);
   };
 
-  // ✅ 3. SAVE ORDER
+  // ✅ 3. SAVE ORDER (Bulk Update)
   const saveOrder = async () => {
     try {
       const payload = localItems.map(m => ({ _id: m._id, order: m.order }));
       await axios.put(`${API_URL}/services/reorder`, { items: payload });
+      
       alert("Order Updated Successfully! 🎉");
       refreshData();
       setIsChanged(false);
@@ -104,8 +111,9 @@ const ManageServices = () => {
       description: "",
       icon: "Monitor",
       category: "development",
-      image: "", // ✅ Reset image
+      image: "",
       order: "",
+      link: "", // ✅ Reset Link
     });
     setIsFormOpen(true);
   };
@@ -123,6 +131,7 @@ const ManageServices = () => {
 
   const confirmDelete = async () => {
     if (!deleteId) return;
+
     try {
       await axios.delete(`${API_URL}/services/${deleteId}`);
       refreshData();
@@ -150,6 +159,7 @@ const ManageServices = () => {
     }
   };
 
+  // Helper to render icon
   const renderIcon = (iconName) => {
     const iconObj = iconOptions.find((i) => i.name === iconName);
     return iconObj ? iconObj.component : <Monitor size={20} />;
@@ -161,7 +171,7 @@ const ManageServices = () => {
         <h2 className="text-3xl font-bold text-slate-800">Manage Services</h2>
         
         <div className="flex gap-3">
-             {/* SAVE ORDER BUTTON */}
+             {/* ✅ SAVE ORDER BUTTON */}
              {isChanged && (
                 <button 
                 onClick={saveOrder}
@@ -184,11 +194,10 @@ const ManageServices = () => {
         {localItems.map((service) => (
           <div
             key={service._id}
-            className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow relative"
+            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full relative overflow-hidden group hover:shadow-md transition-shadow"
           >
-            {/* ✅ NEW IMAGE HEADER */}
+            {/* New Image Header */}
             <div className="relative h-40 bg-gray-100">
-               {/* Order Input (Top Left) */}
                <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/90 px-2 py-1 rounded-lg border border-gray-200 shadow-sm z-10">
                     <span className="text-[10px] font-bold text-gray-500 uppercase">Ord</span>
                     <input 
@@ -198,18 +207,16 @@ const ManageServices = () => {
                         className="w-8 text-center bg-white border border-gray-300 rounded text-xs font-bold text-slate-800 focus:outline-none"
                     />
                </div>
-
-               {/* Category Badge (Top Right) */}
+               
                <div className="absolute top-2 right-2 bg-blue-600 px-2 py-1 rounded text-xs font-bold uppercase tracking-wide text-white z-10">
                  {service.category}
                </div>
 
-               {/* Image */}
                <img src={service.image} alt={service.title} className="w-full h-full object-cover" />
             </div>
 
             <div className="p-6 flex flex-col flex-grow">
-               <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-3 mb-3">
                   <div className={`p-2 rounded-lg bg-blue-50 text-blue-600`}>
                     {renderIcon(service.icon)}
                   </div>
@@ -217,12 +224,19 @@ const ManageServices = () => {
                     {service.title}
                   </h3>
                </div>
-              
-              <p className="text-slate-500 text-sm mb-6 flex-grow leading-relaxed">
-                {service.description}
-              </p>
 
-              <div className="flex gap-3 mt-auto pt-4 border-t border-gray-50">
+               <p className="text-slate-500 text-sm mb-6 flex-grow leading-relaxed">
+                 {service.description}
+               </p>
+
+               {/* Show Link if exists */}
+               {service.link && (
+                 <p className="text-xs text-blue-500 mb-4 truncate flex items-center gap-1">
+                   <LinkIcon size={12}/> {service.link}
+                 </p>
+               )}
+
+               <div className="flex gap-3 mt-auto pt-4 border-t border-gray-50">
                 <button
                   onClick={() => openEditForm(service)}
                   className="flex-1 py-2 rounded-lg border border-gray-200 text-slate-600 hover:bg-slate-50 flex justify-center items-center gap-2 text-sm font-medium"
@@ -272,7 +286,6 @@ const ManageServices = () => {
                 ></textarea>
               </div>
 
-              {/* ✅ Image URL Input (Replaced Color Theme) */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
                 <div className="relative">
@@ -286,7 +299,20 @@ const ManageServices = () => {
                 </div>
               </div>
 
-              {/* Order Input */}
+              {/* ✅ Link Input Added */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Learn More Link (Optional)</label>
+                <div className="relative">
+                  <LinkIcon className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text" name="link"
+                    value={formData.link} onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="/contact or https://example.com"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Display Order</label>
                 <input
@@ -335,6 +361,7 @@ const ManageServices = () => {
         </div>
       )}
 
+      {/* ✅ CONFIRMATION MODAL */}
       <ConfirmationModal
         isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onConfirm={confirmDelete}
         title="Delete Service?" message="Are you sure?"
