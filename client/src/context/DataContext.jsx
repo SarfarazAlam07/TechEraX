@@ -16,27 +16,28 @@ export const DataProvider = ({ children }) => {
   const [services, setServices] = useState([]);
   const [members, setMembers] = useState([]);
   const [blogs, setBlogs] = useState([]);
-  // FIX 1: Removed extra 'inquiriesCount' from useState
   const [inquiries, setInquiries] = useState([]); 
   const [aboutStats, setAboutStats] = useState([]);
   const [aboutFaqs, setAboutFaqs] = useState([]);
-
-  const totalCount = inquiries.length;
+  
+  // ✅ 1. Added Reviews State
+  const [reviews, setReviews] = useState([]); 
 
   // --- FETCH DATA FROM SERVER ---
   const refreshData = async () => {
     try {
       // Parallel requests for faster loading
-      // FIX 2: Added 'resStats' and 'resFaqs' to the destructuring list
-      const [resProjects, resServices, resTeam, resBlogs, resInquiries, resStats, resFaqs] =
+      // ✅ 2. Added resReviews to destructuring
+      const [resProjects, resServices, resTeam, resBlogs, resInquiries, resStats, resFaqs, resReviews] =
         await Promise.all([
           axios.get(`${API_URL}/projects`),
           axios.get(`${API_URL}/services`),
           axios.get(`${API_URL}/team`),
           axios.get(`${API_URL}/blogs`),
           axios.get(`${API_URL}/inquiries`),
-          axios.get(`${API_URL}/stats`),       // Corresponds to resStats
-          axios.get(`${API_URL}/faqs?section=about`), // Corresponds to resFaqs
+          axios.get(`${API_URL}/stats`),       
+          axios.get(`${API_URL}/faqs?section=about`), 
+          axios.get(`${API_URL}/reviews`), // ✅ 3. Added Reviews API Call
         ]);
 
       // Set Data to State
@@ -45,10 +46,11 @@ export const DataProvider = ({ children }) => {
       setMembers(resTeam.data);
       setBlogs(resBlogs.data);
       setInquiries(resInquiries.data);
-      
-      // Ab ye variables define ho gaye hain, to error nahi aayega
       setAboutStats(resStats.data);
       setAboutFaqs(resFaqs.data);
+      
+      // ✅ 4. Set Reviews Data
+      setReviews(resReviews.data);
       
     } catch (error) {
       console.error("Error connecting to Backend:", error);
@@ -83,6 +85,10 @@ export const DataProvider = ({ children }) => {
     setAboutStats,
     aboutFaqs,
     setAboutFaqs,
+
+    // ✅ 5. Export Reviews
+    reviews,
+    setReviews,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
