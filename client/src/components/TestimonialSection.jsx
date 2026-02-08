@@ -26,7 +26,7 @@ const TestimonialSection = () => {
     const data = new FormData();
     data.append("file", imageFile);
     // ⚠️ Yahan apna Cloudinary Upload Preset Name dalein (Step 2 se)
-    data.append("techerax", "techerax_reviews"); 
+    data.append("upload_preset", "techerax");
     // ⚠️ Yahan apna Cloudinary Cloud Name dalein
     const cloudName = "dvl2mf2dv"; 
 
