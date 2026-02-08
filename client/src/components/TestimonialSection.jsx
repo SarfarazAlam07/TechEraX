@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'; 
 import { Star, Quote, ChevronLeft, ChevronRight, X, PenTool } from 'lucide-react';
 import axios from 'axios';
-import { useData } from '../context/DataContext'; // Assuming you have this context for API_URL
+import { useData } from '../context/DataContext'; // ✅ Context import zaroori hai
 
 const TestimonialSection = () => {
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // ✅ DataContext se API_URL aur Global Reviews nikale (Local fetch ki zaroorat nahi)
+  const { API_URL, reviews, refreshData } = useData(); 
+  
   const scrollRef = useRef(null);
   
   // Modal State for Submitting Review
@@ -16,36 +17,22 @@ const TestimonialSection = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Use API URL directly if context is not available inside this component
-  // const API_URL = "http://localhost:5000/api"; 
-
-  // ✅ Fetch Reviews from API
-  const fetchReviews = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/reviews`);
-      setReviews(res.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchReviews();
-  }, []);
-
   // --- SUBMIT REVIEW ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      // ✅ API_URL ab defined hai, toh yeh chal jayega
       await axios.post(`${API_URL}/reviews`, formData);
       alert("Thank you! Your review has been submitted.");
       setIsModalOpen(false);
       setFormData({ name: "", role: "", content: "", stars: 5, image: "" });
-      fetchReviews(); // Refresh list
+      
+      // ✅ Global Data Refresh karein taaki naya review turant dikhe
+      refreshData(); 
+      
     } catch (error) {
+      console.error("Submit Error:", error);
       alert("Failed to submit review.");
     } finally {
       setIsSubmitting(false);
@@ -64,8 +51,6 @@ const TestimonialSection = () => {
       }
     }
   };
-
-  if (loading) return <div className="py-20 text-center text-gray-500">Loading reviews...</div>;
 
   return (
     <section className="py-20 bg-slate-50 overflow-hidden relative">
@@ -86,7 +71,6 @@ const TestimonialSection = () => {
             Trusted by Innovative Companies
           </motion.h2>
           
-          {/* ✅ WRITE REVIEW BUTTON */}
           <button 
             onClick={() => setIsModalOpen(true)}
             className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold flex items-center gap-2 mx-auto hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30"
@@ -100,7 +84,8 @@ const TestimonialSection = () => {
           ref={scrollRef}
           className="flex overflow-x-auto gap-6 px-4 -mx-4 pb-12 pt-8 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
         >
-          {reviews.length === 0 ? (
+          {/* ✅ Check if reviews exist */}
+          {!reviews || reviews.length === 0 ? (
             <p className="text-center w-full text-gray-500">No reviews yet. Be the first to review!</p>
           ) : reviews.map((review) => (
             <motion.div 
@@ -146,7 +131,7 @@ const TestimonialSection = () => {
         </div>
 
         {/* --- ARROW BUTTONS --- */}
-        {reviews.length > 2 && (
+        {reviews && reviews.length > 2 && (
           <div className="flex justify-center gap-4 mt-4">
             <button onClick={() => scroll('left')} className="p-3 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
               <ChevronLeft className="w-6 h-6" />
@@ -174,13 +159,15 @@ const TestimonialSection = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                  <input required type="text" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+                  {/* ✅ Added bg-white, border-gray-300, text-gray-900 */}
+                  <input required type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none" 
                     value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} 
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Role / Company</label>
-                  <input required type="text" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+                   {/* ✅ Added bg-white, border-gray-300, text-gray-900 */}
+                  <input required type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none" 
                     value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} placeholder="e.g. CEO, Google"
                   />
                 </div>
@@ -196,13 +183,15 @@ const TestimonialSection = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Review</label>
-                  <textarea required rows="3" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                   {/* ✅ Added bg-white, border-gray-300, text-gray-900 */}
+                  <textarea required rows="3" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                     value={formData.content} onChange={(e) => setFormData({...formData, content: e.target.value})}
                   ></textarea>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Profile Image URL (Optional)</label>
-                  <input type="text" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+                   {/* ✅ Added bg-white, border-gray-300, text-gray-900 */}
+                  <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none" 
                     value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} placeholder="https://..."
                   />
                 </div>
