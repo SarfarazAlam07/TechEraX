@@ -17,7 +17,7 @@ const TestimonialSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Use API URL directly if context is not available inside this component
-  const API_URL = "http://localhost:5000/api"; 
+  // const API_URL = "http://localhost:5000/api"; 
 
   // ✅ Fetch Reviews from API
   const fetchReviews = async () => {
