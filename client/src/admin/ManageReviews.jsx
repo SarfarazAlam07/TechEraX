@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Edit, Trash2, X, Save, Star, Image as ImageIcon } from "lucide-react";
+import { Plus, Edit, Trash2, X, Save, Star, Upload, Loader2 } from "lucide-react";
 import { useData } from "../context/DataContext";
 import axios from "axios";
 import ConfirmationModal from "../components/ConfirmationModal";
@@ -15,12 +15,38 @@ const ManageReviews = () => {
   const [localItems, setLocalItems] = useState([]);
   const [isChanged, setIsChanged] = useState(false);
 
+  // ✅ Changed role -> lastName in form state
   const [formData, setFormData] = useState({
-    name: "", role: "", content: "", stars: 5, image: "", order: ""
+    name: "", lastName: "", content: "", stars: 5, image: "", order: ""
   });
+
+  const [imageFile, setImageFile] = useState(null); // File state
+  const [isUploading, setIsUploading] = useState(false); // Uploading state
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+
+  // --- CLOUDINARY UPLOAD FUNCTION ---
+  const uploadToCloudinary = async () => {
+    if (!imageFile) return formData.image; // Agar nayi file nahi hai, to purani image hi rakho
+
+    const data = new FormData();
+    data.append("file", imageFile);
+    data.append("upload_preset", "techerax_reviews"); // ✅ Apna Preset Name Dalein
+    const cloudName = "dvl2mf2dv"; // ✅ Apna Cloud Name Dalein
+
+    try {
+      setIsUploading(true);
+      const res = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, data);
+      setIsUploading(false);
+      return res.data.secure_url; 
+    } catch (error) {
+      console.error("Upload Error:", error);
+      setIsUploading(false);
+      alert("Image upload failed!");
+      return null;
+    }
+  };
 
   // Fetch Reviews
   const fetchReviews = async () => {
@@ -63,13 +89,16 @@ const ManageReviews = () => {
   // CRUD Handlers
   const openAddForm = () => {
     setEditingId(null);
-    setFormData({ name: "", role: "", content: "", stars: 5, image: "", order: "" });
+    setFormData({ name: "", lastName: "", content: "", stars: 5, image: "", order: "" });
+    setImageFile(null);
     setIsFormOpen(true);
   };
 
   const openEditForm = (review) => {
     setEditingId(review._id);
-    setFormData(review);
+    // Backend se 'role' aata hai, usse hum form me 'lastName' ki tarah dikhayenge
+    setFormData({ ...review, lastName: review.role });
+    setImageFile(null);
     setIsFormOpen(true);
   };
 
@@ -88,9 +117,22 @@ const ManageReviews = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Upload Image First
+    const imageUrl = await uploadToCloudinary();
+    if (imageFile && !imageUrl) return; // Upload fail hua to ruk jao
+
+    // Prepare Payload
+    const payload = {
+        ...formData,
+        image: imageUrl,
+        role: formData.lastName // Role field me Last Name save kar rahe hain
+    };
+
     try {
-      if (editingId) await axios.put(`${API_URL}/reviews/${editingId}`, formData);
-      else await axios.post(`${API_URL}/reviews`, formData);
+      if (editingId) await axios.put(`${API_URL}/reviews/${editingId}`, payload);
+      else await axios.post(`${API_URL}/reviews`, payload);
+      
       fetchReviews();
       setIsFormOpen(false);
     } catch (error) {
@@ -132,8 +174,8 @@ const ManageReviews = () => {
                 onError={(e) => e.target.src = `https://ui-avatars.com/api/?name=${review.name}`}
               />
               <div>
-                <h3 className="font-bold text-slate-900">{review.name}</h3>
-                <p className="text-xs text-blue-500 font-medium">{review.role}</p>
+                <h3 className="font-bold text-slate-900">{review.name} {review.role}</h3>
+                {/* <p className="text-xs text-blue-500 font-medium">{review.role}</p> */}
               </div>
             </div>
 
@@ -164,67 +206,61 @@ const ManageReviews = () => {
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1">Name</label>
-                    <input 
-                        required 
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
+                    <label className="block text-sm font-bold text-slate-700 mb-1">First Name</label>
+                    <input required className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
                         value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} 
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1">Role</label>
-                    <input 
-                        required 
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
-                        value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} 
+                    <label className="block text-sm font-bold text-slate-700 mb-1">Last Name</label>
+                    <input required className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
+                        value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} 
                     />
                 </div>
               </div>
               
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Content</label>
-                <textarea 
-                    required rows="3" 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none" 
+                <textarea required rows="3" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none" 
                     value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} 
                 />
               </div>
 
+              {/* ✅ IMAGE UPLOAD IN ADMIN */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Image URL</label>
-                <div className="relative">
-                    <ImageIcon className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
-                    <input 
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
-                        value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} 
-                        placeholder="https://..."
-                    />
+                <label className="block text-sm font-bold text-slate-700 mb-1">User Photo</label>
+                
+                {/* Show Preview if exists */}
+                {formData.image && !imageFile && (
+                    <img src={formData.image} alt="Preview" className="w-16 h-16 rounded-full object-cover mb-2 border" />
+                )}
+
+                <div className="relative border border-gray-300 rounded-lg bg-white p-2 flex items-center gap-3">
+                    <div className="bg-gray-100 p-2 rounded-lg"><Upload size={20} className="text-gray-500"/></div>
+                    <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} className="w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-5">
                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1">Stars (1-5)</label>
-                    <input 
-                        type="number" min="1" max="5" required 
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
+                    <label className="block text-sm font-bold text-slate-700 mb-1">Stars (0-5)</label>
+                    <input type="number" min="0" max="5" required className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
                         value={formData.stars} onChange={e => setFormData({...formData, stars: e.target.value})} 
                     />
                  </div>
                  <div>
                     <label className="block text-sm font-bold text-slate-700 mb-1">Order</label>
-                    <input 
-                        type="number" 
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
-                        value={formData.order} onChange={e => setFormData({...formData, order: e.target.value})} 
-                        placeholder="e.g. 1"
+                    <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
+                        value={formData.order} onChange={e => setFormData({...formData, order: e.target.value})} placeholder="e.g. 1"
                     />
                  </div>
               </div>
 
               <div className="pt-4 flex gap-4 border-t border-gray-100 mt-4">
                 <button type="button" onClick={() => setIsFormOpen(false)} className="flex-1 py-3 bg-gray-100 text-slate-700 font-bold rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors"><Save size={20} /> Save Review</button>
+                <button type="submit" disabled={isUploading} className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors">
+                    {isUploading ? <><Loader2 className="animate-spin" /> Uploading...</> : <><Save size={20} /> Save Review</>}
+                </button>
               </div>
             </form>
           </div>
