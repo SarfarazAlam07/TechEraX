@@ -1,34 +1,87 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'; 
-import { Star, Quote, ChevronLeft, ChevronRight, X, PenTool } from 'lucide-react';
+import { Star, Quote, ChevronLeft, ChevronRight, X, PenTool, Upload, Loader2 } from 'lucide-react'; // ✅ Icons added
 import axios from 'axios';
-import { useData } from '../context/DataContext'; // ✅ Context import zaroori hai
+import { useData } from '../context/DataContext';
 
 const TestimonialSection = () => {
-  // ✅ DataContext se API_URL aur Global Reviews nikale (Local fetch ki zaroorat nahi)
   const { API_URL, reviews, refreshData } = useData(); 
   
   const scrollRef = useRef(null);
-  
-  // Modal State for Submitting Review
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // ✅ Initial Stars 0
   const [formData, setFormData] = useState({
-    name: "", role: "", content: "", stars: 5, image: ""
+    name: "", lastName: "", content: "", stars: 0, image: ""
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [imageFile, setImageFile] = useState(null); // To store selected file
+  const [isUploading, setIsUploading] = useState(false); // Image upload loading state
+  const [isSubmitting, setIsSubmitting] = useState(false); // Form submit loading state
+
+  // --- IMAGE UPLOAD FUNCTION ---
+  const uploadToCloudinary = async () => {
+    if (!imageFile) return ""; // Agar image nahi hai to blank return karo
+
+    const data = new FormData();
+    data.append("file", imageFile);
+    // ⚠️ Yahan apna Cloudinary Upload Preset Name dalein (Step 2 se)
+    data.append("techerax", "techerax_reviews"); 
+    // ⚠️ Yahan apna Cloudinary Cloud Name dalein
+    const cloudName = "dvl2mf2dv"; 
+
+    try {
+      setIsUploading(true);
+      const res = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, data);
+      setIsUploading(false);
+      return res.data.secure_url; // Yeh URL return karega
+    } catch (error) {
+      console.error("Image Upload Error", error);
+      setIsUploading(false);
+      alert("Image upload failed!");
+      return null;
+    }
+  };
 
   // --- SUBMIT REVIEW ---
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Word Count Check
+    const wordCount = formData.content.trim().split(/\s+/).length;
+    if (wordCount > 200) {
+      alert(`Review is too long (${wordCount} words). Limit is 200.`);
+      return;
+    }
+
     setIsSubmitting(true);
+
     try {
-      // ✅ API_URL ab defined hai, toh yeh chal jayega
-      await axios.post(`${API_URL}/reviews`, formData);
+      // 1. Pehle Image Upload karo (agar hai to)
+      let imageUrl = formData.image;
+      if (imageFile) {
+        imageUrl = await uploadToCloudinary();
+        if (!imageUrl) {
+            setIsSubmitting(false);
+            return; // Upload fail hua to ruk jao
+        }
+      }
+
+      // 2. Data Backend bhejo
+      const payload = {
+        ...formData,
+        image: imageUrl, // Cloudinary URL
+        role: formData.lastName // Role field mein Last Name store kar rahe hain
+      };
+
+      await axios.post(`${API_URL}/reviews`, payload);
       alert("Thank you! Your review has been submitted.");
-      setIsModalOpen(false);
-      setFormData({ name: "", role: "", content: "", stars: 5, image: "" });
       
-      // ✅ Global Data Refresh karein taaki naya review turant dikhe
+      // Reset Form
+      setIsModalOpen(false);
+      setFormData({ name: "", lastName: "", content: "", stars: 0, image: "" });
+      setImageFile(null);
+      
       refreshData(); 
       
     } catch (error) {
@@ -84,7 +137,6 @@ const TestimonialSection = () => {
           ref={scrollRef}
           className="flex overflow-x-auto gap-6 px-4 -mx-4 pb-12 pt-8 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
         >
-          {/* ✅ Check if reviews exist */}
           {!reviews || reviews.length === 0 ? (
             <p className="text-center w-full text-gray-500">No reviews yet. Be the first to review!</p>
           ) : reviews.map((review) => (
@@ -93,37 +145,45 @@ const TestimonialSection = () => {
               className="relative min-w-[320px] md:min-w-[400px] snap-center"
             >
               <motion.div 
-                className="bg-white rounded-2xl p-8 h-full flex flex-col justify-between shadow-sm border border-gray-100 relative overflow-hidden"
-                whileHover={{ y: -5, boxShadow: "0 10px 30px -10px rgba(0,0,0,0.1)" }}
+                className="bg-white rounded-2xl p-6 h-[320px] flex flex-col shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+                whileHover={{ y: -5 }}
               >
-                <Quote className="absolute top-4 right-6 w-24 h-24 text-gray-50 opacity-[0.06] rotate-12 pointer-events-none" />
+                <Quote className="absolute top-4 right-4 w-16 h-16 text-gray-50 opacity-20 rotate-12 pointer-events-none" />
 
-                <div>
-                  <div className="flex gap-1 mb-6">
-                    {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`w-5 h-5 ${i < review.stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} 
-                      />
-                    ))}
-                  </div>
-                  <p className="text-gray-700 text-lg leading-relaxed italic mb-8 relative z-10">
-                    "{review.content}"
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-4 mt-auto">
+                {/* HEADER: Image + Name + Stars */}
+                <div className="flex items-center gap-4 mb-4 border-b border-gray-50 pb-4">
                   <img 
                     src={review.image || `https://ui-avatars.com/api/?name=${review.name}&background=random`} 
                     alt={review.name} 
-                    className="w-12 h-12 rounded-full object-cover border border-gray-100"
+                    className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
                     onError={(e) => e.target.src = `https://ui-avatars.com/api/?name=${review.name}&background=random`}
                   />
                   <div>
-                    <h4 className="font-bold text-gray-900 text-sm">{review.name}</h4>
-                    <p className="text-gray-500 text-sm">{review.role}</p>
+                    <h4 className="font-bold text-gray-900 text-lg leading-tight">
+                        {review.name} {review.role} 
+                    </h4>
+                    
+                    {/* Stars: Show 5 stars, filled based on rating */}
+                    <div className="flex gap-1 mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star 
+                          key={i} 
+                          // Logic: Agar i < stars hai to yellow, nahi to gray
+                          className={`w-4 h-4 ${i < review.stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} 
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
+
+                {/* CONTENT */}
+                <div className="flex-grow overflow-hidden relative">
+                    <p className="text-gray-600 text-base leading-relaxed italic line-clamp-6">
+                        "{review.content}"
+                    </p>
+                    <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                </div>
+
               </motion.div>
             </motion.div>
           ))}
@@ -149,7 +209,7 @@ const TestimonialSection = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto"
             >
               <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
                 <X size={24} />
@@ -157,47 +217,82 @@ const TestimonialSection = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Write a Review</h3>
               
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                  {/* ✅ Added bg-white, border-gray-300, text-gray-900 */}
-                  <input required type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none" 
-                    value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} 
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input required type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} 
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input required type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} 
+                        />
+                    </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Role / Company</label>
-                   {/* ✅ Added bg-white, border-gray-300, text-gray-900 */}
-                  <input required type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none" 
-                    value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} placeholder="e.g. CEO, Google"
-                  />
-                </div>
+
+                {/* ✅ STAR RATING (Clickable) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <button type="button" key={star} onClick={() => setFormData({...formData, stars: star})}>
-                        <Star className={`w-8 h-8 ${star <= formData.stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} />
+                      <button 
+                        type="button" 
+                        key={star} 
+                        // Agar current star par click ho to 0 kar do (toggle), warna value set karo
+                        onClick={() => setFormData({...formData, stars: star === formData.stars ? 0 : star})}
+                        className="transition-transform hover:scale-110 focus:outline-none"
+                      >
+                        <Star 
+                           className={`w-8 h-8 ${star <= formData.stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                        />
                       </button>
                     ))}
                   </div>
+                  <p className="text-xs text-gray-400 mt-1">Tap a star again to clear (0 stars).</p>
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Review</label>
-                   {/* ✅ Added bg-white, border-gray-300, text-gray-900 */}
-                  <textarea required rows="3" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                    value={formData.content} onChange={(e) => setFormData({...formData, content: e.target.value})}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Review (Max 200 words)
+                  </label>
+                  <textarea required rows="4" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                    value={formData.content} 
+                    onChange={(e) => setFormData({...formData, content: e.target.value})}
+                    placeholder="Share your experience..."
                   ></textarea>
+                  <p className="text-xs text-gray-400 mt-1 text-right">
+                      {formData.content.trim().split(/\s+/).filter(w => w).length}/200 words
+                  </p>
                 </div>
+
+                {/* ✅ FILE UPLOAD (Replaced Text Input) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Profile Image URL (Optional)</label>
-                   {/* ✅ Added bg-white, border-gray-300, text-gray-900 */}
-                  <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none" 
-                    value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} placeholder="https://..."
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Photo (Optional)</label>
+                  <div className="relative border border-gray-300 rounded-lg bg-white p-2 flex items-center gap-3">
+                     <div className="bg-gray-100 p-2 rounded-lg">
+                        <Upload size={20} className="text-gray-500"/>
+                     </div>
+                     <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => setImageFile(e.target.files[0])}
+                        className="w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                     />
+                  </div>
                 </div>
                 
-                <button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors">
-                  {isSubmitting ? "Submitting..." : "Submit Review"}
+                <button 
+                    type="submit" 
+                    disabled={isSubmitting || isUploading} 
+                    className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  {(isSubmitting || isUploading) ? (
+                    <> <Loader2 className="animate-spin" /> Processing... </>
+                  ) : (
+                    "Submit Review"
+                  )}
                 </button>
               </form>
             </motion.div>
