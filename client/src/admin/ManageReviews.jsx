@@ -32,7 +32,7 @@ const ManageReviews = () => {
 
     const data = new FormData();
     data.append("file", imageFile);
-    data.append("upload_preset", "techerax_reviews"); // ✅ Apna Preset Name Dalein
+    data.append("upload_preset", "techerax"); // ✅ Apna Preset Name Dalein
     const cloudName = "dvl2mf2dv"; // ✅ Apna Cloud Name Dalein
 
     try {
