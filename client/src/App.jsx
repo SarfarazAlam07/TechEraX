@@ -25,6 +25,7 @@ import ManageProjects from "./admin/ManageProjects";
 import ManageTeam from "./admin/ManageTeam";
 import ManageAbout from './admin/ManageAbout';
 import ManageInquiries from "./admin/ManageInquiries";
+import ManageReviews from "./admin/ManageReviews"; // ✅ 1. NEW IMPORT
 
 // Context Import
 import { DataProvider } from './context/DataContext';
@@ -35,7 +36,7 @@ const PublicLayout = () => {
     <>
       <Navbar />
       <div className="min-h-screen">
-        <Outlet /> {/* Yahan Home, About, etc. render honge */}
+        <Outlet /> 
       </div>
       <Footer />
     </>
@@ -44,7 +45,6 @@ const PublicLayout = () => {
 
 function App() {
   return (
-    // ✅ DataProvider ko yahan sabse top par wrap kiya hai
     <DataProvider>
       <Router>
         <div className="bg-white min-h-screen font-sans">
@@ -52,7 +52,7 @@ function App() {
           
           <Routes>
             {/* ============================== */}
-            {/* 🟢 PUBLIC ROUTES (With Navbar & Footer) */}
+            {/* 🟢 PUBLIC ROUTES */}
             {/* ============================== */}
             <Route element={<PublicLayout />}>
               <Route path="/" element={<Home />} />
@@ -61,18 +61,15 @@ function App() {
               <Route path="/portfolio" element={<Portfolio />} />
               <Route path="/contactus" element={<ContactUs />} />
               <Route path="/blog" element={<Blog />} />
-              {/* 404 Redirect to Home */}
               <Route path="*" element={<Home />} />
             </Route>
 
             {/* ============================== */}
-            {/* 🔴 ADMIN ROUTES (No Navbar/Footer) */}
+            {/* 🔴 ADMIN ROUTES */}
             {/* ============================== */}
             
-            {/* 1. Login Page */}
             <Route path="/admin/login" element={<AdminLogin />} />
 
-            {/* 2. Protected Panel (With Sidebar) */}
             <Route element={<ProtectedRoute />}> 
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
@@ -82,6 +79,10 @@ function App() {
                 <Route path="blogs" element={<ManageBlogs />} />
                 <Route path="about" element={<ManageAbout />} />
                 <Route path="inquiries" element={<ManageInquiries />} />
+                
+                {/* ✅ 2. NEW ROUTE FOR REVIEWS */}
+                <Route path="reviews" element={<ManageReviews />} /> 
+                
               </Route>
             </Route>
             
