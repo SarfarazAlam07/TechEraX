@@ -6,18 +6,18 @@ import {
   Briefcase, 
   FileText, 
   MessageSquare, 
-  LogOut,
-  Layers,
+  LogOut, 
+  Layers, 
   HelpCircle,
-  Menu, // ✅ Mobile Menu Icon
-  X     // ✅ Close Icon
+  Menu,
+  X,
+  Star // ✅ Import Star icon for Reviews
 } from "lucide-react";
 
 const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-   
-  // ✅ State for Mobile Sidebar Toggle
+    
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const menuItems = [
@@ -27,6 +27,7 @@ const AdminLayout = () => {
     { name: "Manage Services", icon: <Layers size={20} />, path: "/admin/services" },
     { name: "Portfolio / Projects", icon: <Briefcase size={20} />, path: "/admin/projects" },
     { name: "Blogs & News", icon: <FileText size={20} />, path: "/admin/blogs" },
+    { name: "Manage Reviews", icon: <Star size={20} />, path: "/admin/reviews" }, // ✅ Added Reviews Link
     { name: "Manage About", icon: <HelpCircle size={20} />, path: "/admin/about" },
   ];
 
@@ -41,15 +42,12 @@ const AdminLayout = () => {
   return (
     <div className="flex h-screen bg-gray-100 flex-col lg:flex-row">
       
-      {/* ======================================= */}
-      {/* 📱 MOBILE HEADER (Visible only on small screens) */}
-      {/* ======================================= */}
+      {/* 📱 MOBILE HEADER */}
       <div className="lg:hidden bg-slate-900 text-white p-4 flex justify-between items-center sticky top-0 z-20 shadow-md">
         <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
           TechEraX Admin
         </h1>
         
-        {/* ✅ FIX: bg-transparent add kiya aur border hataya */}
         <button 
           onClick={() => setIsSidebarOpen(true)} 
           className="p-2 bg-transparent text-white hover:bg-slate-800 rounded-lg transition-colors border-none outline-none focus:ring-0"
@@ -58,19 +56,15 @@ const AdminLayout = () => {
         </button>
       </div>
 
-      {/* ======================================= */}
-      {/* 🌑 MOBILE OVERLAY (Backdrop) */}
-      {/* ======================================= */}
+      {/* 🌑 MOBILE OVERLAY */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-30 lg:hidden backdrop-blur-sm"
-          onClick={() => setIsSidebarOpen(false)} // Click outside to close
+          onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      {/* ======================================= */}
-      {/* 📂 SIDEBAR (Responsive) */}
-      {/* ======================================= */}
+      {/* 📂 SIDEBAR */}
       <aside 
         className={`
           fixed top-0 left-0 h-full w-64 bg-slate-900 text-white flex flex-col z-40
@@ -83,7 +77,6 @@ const AdminLayout = () => {
           <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
             TechEraX
           </h1>
-          {/* Close Button for Mobile */}
           <button 
             onClick={() => setIsSidebarOpen(false)} 
             className="lg:hidden p-2 bg-transparent text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
@@ -126,9 +119,7 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      {/* ======================================= */}
       {/* 📄 MAIN CONTENT AREA */}
-      {/* ======================================= */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto bg-slate-50 w-full">
         <div className="max-w-7xl mx-auto">
             <Outlet />
