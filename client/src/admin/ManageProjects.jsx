@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { 
   Plus, Edit, Trash2, X, Save, 
-  Image as ImageIcon, ExternalLink, Github 
+  Image as ImageIcon, ExternalLink, Github, Upload 
 } from "lucide-react";
 import { useData } from "../context/DataContext";
 import axios from "axios"; 
@@ -13,51 +13,50 @@ const ManageProjects = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
-  // --- ORDERING STATE ---
+  // Ordering State
   const [localItems, setLocalItems] = useState([]); 
   const [isChanged, setIsChanged] = useState(false);
+
+  // ✅ New State for File
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   // Form State
   const [formData, setFormData] = useState({
     title: "",
     category: "Web",
-    image: "",
+    // image: "", // Ab image URL directly set nahi karenge input se
     techStack: "",
     liveLink: "",
     repoLink: "",
-    order: "" // ✅ Added Order
+    order: ""
   });
 
-  // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
-  // ✅ 1. SYNC & SORT DATA
+  // 1. SYNC & SORT DATA
   useEffect(() => {
-    // Sort projects by order
     const sortedProjects = [...projects].sort((a, b) => (a.order || 0) - (b.order || 0));
     setLocalItems(sortedProjects);
     setIsChanged(false);
   }, [projects]);
 
-  // ✅ 2. HANDLE ORDER CHANGE (Input Box)
+  // 2. HANDLE ORDER CHANGE
   const handleOrderChange = (e, id) => {
     const newOrder = parseInt(e.target.value) || 0;
-    
     const updatedList = localItems.map((item) => 
       item._id === id ? { ...item, order: newOrder } : item
     );
-
     setLocalItems(updatedList);
     setIsChanged(true);
   };
 
-  // ✅ 3. SAVE ORDER (Bulk Update)
+  // 3. SAVE ORDER
   const saveOrder = async () => {
     try {
       const payload = localItems.map(m => ({ _id: m._id, order: m.order }));
       await axios.put(`${API_URL}/projects/reorder`, { items: payload });
-      
       alert("Order Updated Successfully! 🎉");
       refreshData();
       setIsChanged(false);
@@ -71,15 +70,36 @@ const ManageProjects = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // ✅ Handle File Selection
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setImagePreview(URL.createObjectURL(file)); // Preview show karne ke liye
+    }
+  };
+
   const openAddForm = () => {
     setEditingId(null);
-    setFormData({ title: "", category: "Web", image: "", techStack: "", liveLink: "", repoLink: "", order: "" });
+    setFormData({ title: "", category: "Web", techStack: "", liveLink: "", repoLink: "", order: "" });
+    setSelectedFile(null);
+    setImagePreview("");
     setIsFormOpen(true);
   };
 
   const openEditForm = (project) => {
     setEditingId(project._id);
-    setFormData(project);
+    setFormData({
+        title: project.title,
+        category: project.category,
+        techStack: project.techStack,
+        liveLink: project.liveLink,
+        repoLink: project.repoLink,
+        order: project.order
+    });
+    // Agar edit kar rahe hain to purani image dikhao
+    setImagePreview(project.image);
+    setSelectedFile(null);
     setIsFormOpen(true);
   };
 
@@ -101,13 +121,31 @@ const ManageProjects = () => {
     }
   };
 
+  // ✅ Submit Logic Updated for FormData
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // FormData object banayein kyuki file bhejni hai
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("category", formData.category);
+    data.append("techStack", formData.techStack);
+    data.append("liveLink", formData.liveLink);
+    data.append("repoLink", formData.repoLink);
+    data.append("order", formData.order);
+
+    // Agar nayi file select ki hai to append karo
+    if (selectedFile) {
+        data.append("image", selectedFile);
+    }
+
     try {
+      const config = { headers: { "Content-Type": "multipart/form-data" } };
+
       if (editingId) {
-        await axios.put(`${API_URL}/projects/${editingId}`, formData);
+        await axios.put(`${API_URL}/projects/${editingId}`, data, config);
       } else {
-        await axios.post(`${API_URL}/projects`, formData);
+        await axios.post(`${API_URL}/projects`, data, config);
       }
       refreshData();
       setIsFormOpen(false);
@@ -123,7 +161,6 @@ const ManageProjects = () => {
         <h2 className="text-3xl font-bold text-slate-800">Manage Projects</h2>
         
         <div className="flex gap-3">
-             {/* ✅ SAVE ORDER BUTTON */}
              {isChanged && (
                 <button 
                 onClick={saveOrder}
@@ -146,10 +183,8 @@ const ManageProjects = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {localItems.length === 0 ? <p className="text-gray-500">No projects found.</p> : localItems.map((project) => (
           <div key={project._id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow relative">
-            
             <div className="relative h-48 bg-gray-100">
-                
-                {/* ✅ ORDER INPUT BOX (Top Left) */}
+                {/* Order Input */}
                 <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/90 px-2 py-1 rounded-lg border border-gray-200 shadow-sm z-10">
                     <span className="text-[10px] font-bold text-gray-500 uppercase">Ord</span>
                     <input 
@@ -159,7 +194,6 @@ const ManageProjects = () => {
                         className="w-8 text-center bg-white border border-gray-300 rounded text-xs font-bold text-slate-800 focus:outline-none"
                     />
                 </div>
-
               <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
               <div className="absolute top-2 right-2 bg-red-600 px-2 py-1 rounded text-xs font-bold uppercase tracking-wide text-white">
                 {project.category}
@@ -171,12 +205,10 @@ const ManageProjects = () => {
               <p className="text-slate-500 text-sm mb-4">
                 <span className="font-semibold text-slate-700">Tech:</span> {project.techStack}
               </p>
-                
               <div className="flex gap-2 mb-6">
                 {project.liveLink && <ExternalLink size={16} className="text-blue-500" />}
                 {project.repoLink && <Github size={16} className="text-gray-700" />}
               </div>
-
               <div className="mt-auto grid grid-cols-2 gap-3">
                 <button onClick={() => openEditForm(project)} className="py-2 px-4 rounded-lg bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 flex items-center justify-center gap-2">
                   <Edit size={16} /> Edit
@@ -227,15 +259,24 @@ const ManageProjects = () => {
                 </div>
               </div>
 
+              {/* ✅ NEW FILE INPUT */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Image URL</label>
-                <div className="relative">
-                  <ImageIcon className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
+                <label className="block text-sm font-bold text-slate-700 mb-1">Project Image</label>
+                
+                {/* Preview Selected/Existing Image */}
+                {imagePreview && (
+                    <div className="mb-2">
+                        <img src={imagePreview} alt="Preview" className="h-32 w-auto object-cover rounded-lg border border-gray-200" />
+                    </div>
+                )}
+
+                <div className="relative border border-gray-300 rounded-lg bg-white p-2 flex items-center gap-3">
+                  <div className="bg-gray-100 p-2 rounded-lg"><Upload size={20} className="text-gray-500"/></div>
                   <input 
-                    type="text" name="image" required
-                    value={formData.image} onChange={handleInputChange} 
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
-                    placeholder="https://..."
+                    type="file" 
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
                   />
                 </div>
               </div>
@@ -249,7 +290,6 @@ const ManageProjects = () => {
                 />
               </div>
               
-               {/* ✅ Order Input */}
                <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Display Order</label>
                 <input
@@ -287,13 +327,12 @@ const ManageProjects = () => {
         </div>
       )}
 
-      {/* ✅ CONFIRMATION MODAL */}
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={confirmDelete}
         title="Delete Project?"
-        message="Are you sure you want to delete this project? This action cannot be undone."
+        message="Are you sure you want to delete this project?"
       />
     </div>
   );
