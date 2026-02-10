@@ -1,0 +1,184 @@
+[33m359977b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m error
+[33m9d415f5[m work on new feature
+[33maad26d0[m work on new feature
+[33m2081c2e[m adding featuer
+[33me51c8af[m Change upload preset name for image uploads
+[33m42666d0[m Refactor ManageReviews to include lastName instead of role
+[33m3038329[m Refactor TestimonialSection component
+[33md45a1d2[m Fix upload preset name for Cloudinary
+[33m14b9650[m Enhance TestimonialSection with image upload feature
+[33m58126c7[m Update stars validation to allow zero
+[33mcf32569[m Refactor TestimonialSection for context usage
+[33mdbb5bad[m Add reviews state and API integration
+[33m2117a20[m Comment out API_URL definition in TestimonialSection
+[33m37e1350[m Add review routes to the server
+[33m9e73267[m Enhance ManageReviews component styling and feedback
+[33mbfbc253[m Add Reviews link to Admin sidebar
+[33m1b1c9cb[m Add ManageReviews component and update routes
+[33mda41dd2[m Refactor TestimonialSection to fetch reviews from API
+[33m839c833[m Add ManageReviews component for review management
+[33mdbaeace[m Add ManageReviews route and import
+[33mc791eb5[m Add review routes for CRUD operations
+[33m19a1b81[m Implement review controller with CRUD operations
+[33m3399f9a[m Add Review model with schema definition
+[33me62f18f[m Update ManageServices.jsx
+[33me189e90[m Update Service.js
+[33m5f6e604[m Update ServicesSection.jsx
+[33m534125f[m Update ServicesSection.jsx
+[33made85a2[m Update ServicesSection.jsx
+[33me6eaccb[m Update ManageServices.jsx
+[33m822b106[m Update Service.js
+[33mbe05c93[m Update ManageTeam.jsx
+[33m0aa9dc8[m Update ManageServices.jsx
+[33m066338c[m Update ManageProjects.jsx
+[33mc3a49d5[m Update ManageBlogs.jsx
+[33m85413fe[m Update ManageAbout.jsx
+[33mb6d571b[m Update faqRoutes.js
+[33mcf1cb81[m Update statRoutes.js
+[33m448bf43[m Update blogRoutes.js
+[33m61105fc[m Update serviceRoutes.js
+[33m6ea6426[m Update projectRoutes.js
+[33m7ca8548[m Update teamRoutes.js
+[33m2c144d4[m Update faqController.js
+[33md1ecf15[m Update statController.js
+[33mf6eae38[m Update blogController.js
+[33m82c7096[m Update serviceController.js
+[33md195891[m Update projectController.js
+[33m0317cfe[m Update teamController.js
+[33m966b5bf[m Update Faq.js
+[33mb70db4f[m Update Stat.js
+[33m5e9e549[m Update blog
+[33me853237[m Update Service.js
+[33m924b030[m Update Project.js
+[33m1c0ec8d[m Update Member.js
+[33m9afe9eb[m Update
+[33m272512b[m Update statController.js
+[33mffafe90[m Update blogController.js
+[33m59957a3[m Update serviceController.js
+[33ma44343c[m Update projectController.js
+[33md45f1a5[m Update teamController.js
+[33mb2dd9f7[m Update AdminLayout.jsx
+[33m3603a57[m Update AdminLayout.jsx
+[33mb1b23b4[m Update
+[33m1f8e932[m Update ManageAbout.jsx
+[33m35bcb6b[m Update ManageAbout.jsx
+[33md13ad6a[m Update ManageAbout.jsx
+[33m4401f21[m Update ManageAbout.jsx
+[33m9ac4352[m Update ManageBlogs.jsx
+[33md020bef[m Update ManageInquiries.jsx
+[33m7df946b[m Update ManageInquiries.jsx
+[33m6100d5c[m Update ManageInquiries.jsx
+[33m32c3709[m Update AboutStats.jsx
+[33mc316df8[m Update AboutStats.jsx
+[33mcd9aa88[m solve bug
+[33m25daf72[m solve bug
+[33m9cb10f0[m Update AboutStats.jsx
+[33mc10baf4[m Update AboutStats.jsx
+[33ma275dc8[m solve bug
+[33m2d56d5c[m solve bug
+[33mbe11733[m Update ManageAbout.jsx
+[33md5dd121[m Update ManageAbout.jsx
+[33md80e465[m Update ManageAbout.jsx
+[33m499f0d4[m Update ManageServices.jsx
+[33m159f901[m Update ManageProjects.jsx
+[33mb37047a[m Update ManageTeam.jsx
+[33m6f127a9[m Update ManageAbout.jsx
+[33m876e083[m Update DataContext.jsx
+[33mc0c7918[m Update ManageBlogs.jsx
+[33m4501ec6[m Update ConfirmationModal.jsx
+[33m963f051[m Update ConfirmationModal.jsx
+[33me84f1e6[m Update ManageBlogs.jsx
+[33m02a71ec[m Update ManageBlogs.jsx
+[33m40c4ced[m Update ManageBlogs.jsx
+[33m6e2e509[m Update ManageBlogs.jsx
+[33m713139b[m Create ConfirmationModal.jsx
+[33m9946371[m binding status of inquiries
+[33mad82eaf[m Update ManageInquiries.jsx
+[33m21884a6[m Update ContactForm.jsx
+[33m97e381b[m Update ContactForm.jsx
+[33mcbcdf4c[m Merge branch 'main' of https://github.com/SarfarazAlam07/TechEraX
+[33m4403c8e[m Update ContactForm.jsx
+[33mf24bb5f[m Heading
+[33m257b93d[m Update ContactForm.jsx
+[33m7769a0f[m update
+[33m25b3531[m Update AboutStats.jsx
+[33mc16b631[m Update AboutStats.jsx
+[33mcebc7bd[m fix corse error
+[33mde03163[m Updated API URL for production
+[33m800dd08[m Updated API URL for production
+[33mf0314ec[m Update DataContext.jsx
+[33m0abec50[m connection complete
+[33m6361955[m Merge branch 'main' of https://github.com/SarfarazAlam07/TechEraX
+[33ma04cfd4[m connect frontend to backend
+[33mfc5bf8c[m change
+[33md5584ac[m change
+[33m28fb3e9[m Update index.css
+[33m6de84ad[m Update ManageTeam.jsx
+[33maa80da0[m Update ManageServices.jsx
+[33m4e59d2a[m Update ManageProjects.jsx
+[33mfa7bcc5[m Update ManageInquiries.jsx
+[33m30d362c[m Update ManageBlogs.jsx
+[33m31df880[m Update ManageAbout.jsx
+[33m8bb1499[m Update AdminLayout.jsx
+[33mb12f86d[m Update index.css
+[33m9951776[m Update index.css
+[33m8411a8a[m Update AdminLogin.jsx
+[33mb664134[m Creating Api or Controllers or Routes
+[33m6b2fab8[m  db connection adding schema
+[33mc3c946b[m init backend/ server side
+[33m4bc7d08[m fixing Sahil error
+[33m6a6969e[m Update AdminLayout.jsx
+[33mc356453[m Update AdminDashboard.jsx
+[33m21589e5[m Update App.jsx
+[33m50ff004[m Update ContactForm.jsx
+[33m318d1f6[m add admin page
+[33md912726[m Update Navbar.jsx
+[33m77c5a82[m Update Navbar.jsx
+[33m9983033[m Update AboutStats.jsx
+[33m8c6eaa8[m Update AboutHero.jsx
+[33m4cff097[m Update Navbar.jsx
+[33mf42add4[m Update HeroSection.jsx
+[33m84a80f8[m Update HeroSection.jsx
+[33md1d0560[m Update HeroSection.jsx
+[33m63b265d[m Update Services.jsx
+[33mdd41c59[m Update Portfolio.jsx
+[33mf19ed8c[m Update About.jsx
+[33m7bd20d2[m Update CTASection.jsx
+[33m75a012a[m Update CTASection.jsx
+[33m2b0cf89[m uncomment cta section
+[33m6eed246[m again fix
+[33mb5405f4[m map section fix
+[33ma764e0a[m comment out color scheme
+[33m8383e18[m Refactor ContactForm styles and placeholders
+[33mde640a3[m Change text colors for BlogFAQ component
+[33m4cbef9a[m Enhance text and button styles in ContactFAQ component
+[33m902155d[m Update button hover background color in Footer
+[33m30a6b9d[m Update Footer button styles and background
+[33m7056134[m Update Footer styles for button and background
+[33mb0b0aca[m Update CSS to enable color-scheme and set background
+[33m6a76067[m Add background color to Footer component
+[33m80f428b[m Comment out color-scheme in index.css
+[33m8a0d556[m Comment out CTASection in About.jsx
+[33m5ff4e6d[m Comment out CTASection in Services.jsx
+[33m76a0cf0[m Comment out CTASection in Portfolio component
+[33m9be8a4f[m testing purpose
+[33m8a15036[m extra white space remove
+[33m1debd3c[m white space remove
+[33m6714b34[m Optimize CTASection with improved animations and styles
+[33m5b91f43[m change
+[33m84533fa[m google search console
+[33me2c55d0[m more optimization
+[33m7c339d7[m more optimization
+[33mfb73479[m more optimization
+[33m8ba6062[m add SEO , Organize Team Section , change TechStack, add links in nave or more resposive
+[33mc6ae197[m add more tabs.jsx
+[33mad327f6[m add feature in nav bar links
+[33m0618eb7[m chaning image
+[33m376b0ad[m fixing bug
+[33me620613[m fixing bug
+[33md6c9828[m create a file for routing
+[33mcfc481f[m bug2
+[33mc041131[m bug fix
+[33m3a4dddb[m Merge branch 'main' of https://github.com/SarfarazAlam07/TechEraX
+[33m02991f7[m Fixed .gitignore and removed cached files
+[33m9e26752[m Initial commit

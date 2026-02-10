@@ -1,4 +1,5 @@
 import Project from "../models/Project.js";
+import uploadFile from "../services/imageurl.js";
 
 // ✅ 1. Get Projects (Sorted by Order)
 export const getProjects = async (req, res) => {
@@ -11,11 +12,23 @@ export const getProjects = async (req, res) => {
 };
 
 export const createProject = async (req, res) => {
-  try {
-    const newProject = new Project(req.body);
+try {
+    let imageUrl = req.body.image || ""; 
+
+    // ✅ Agar File aayi hai to Upload karo
+    if (req.file) {
+        imageUrl = await uploadFile(req.file.buffer, req.file.originalname);
+    }
+
+    const newProject = new Project({
+        ...req.body,
+        image: imageUrl // Final URL save karo
+    });
+
     const savedProject = await newProject.save();
     res.status(201).json(savedProject);
   } catch (error) {
+    console.error("Create Error:", error);
     res.status(400).json({ message: error.message });
   }
 };
