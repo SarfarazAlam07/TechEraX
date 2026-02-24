@@ -11,35 +11,34 @@ const ManageReviews = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   
-  // Ordering logic
   const [localItems, setLocalItems] = useState([]);
   const [isChanged, setIsChanged] = useState(false);
 
-  // ✅ Changed role -> lastName in form state
   const [formData, setFormData] = useState({
     name: "", lastName: "", content: "", stars: 5, image: "", order: ""
   });
 
-  const [imageFile, setImageFile] = useState(null); // File state
-  const [isUploading, setIsUploading] = useState(false); // Uploading state
+  const [imageFile, setImageFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
-  // --- CLOUDINARY UPLOAD FUNCTION ---
-  const uploadToCloudinary = async () => {
-    if (!imageFile) return formData.image; // Agar nayi file nahi hai, to purani image hi rakho
+  // --- IMAGEKIT UPLOAD FUNCTION (Via Backend) ---
+  const uploadToImageKit = async () => {
+    if (!imageFile) return formData.image; 
 
     const data = new FormData();
     data.append("file", imageFile);
-    data.append("upload_preset", "techerax"); // ✅ Apna Preset Name Dalein
-    const cloudName = "dvl2mf2dv"; // ✅ Apna Cloud Name Dalein
 
     try {
       setIsUploading(true);
-      const res = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, data);
+      // Apne backend ke naye route par file bhej rahe hain
+      const res = await axios.post(`${API_URL}/upload`, data, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
       setIsUploading(false);
-      return res.data.secure_url; 
+      return res.data.url; // Backend hume ImageKit ka URL dega
     } catch (error) {
       console.error("Upload Error:", error);
       setIsUploading(false);
@@ -48,7 +47,6 @@ const ManageReviews = () => {
     }
   };
 
-  // Fetch Reviews
   const fetchReviews = async () => {
     try {
       const res = await axios.get(`${API_URL}/reviews`);
@@ -64,7 +62,6 @@ const ManageReviews = () => {
     fetchReviews();
   }, [API_URL]);
 
-  // Order Change Handler
   const handleOrderChange = (e, id) => {
     const newOrder = parseInt(e.target.value) || 0;
     const updatedList = localItems.map((item) => 
@@ -86,7 +83,6 @@ const ManageReviews = () => {
     }
   };
 
-  // CRUD Handlers
   const openAddForm = () => {
     setEditingId(null);
     setFormData({ name: "", lastName: "", content: "", stars: 5, image: "", order: "" });
@@ -96,7 +92,6 @@ const ManageReviews = () => {
 
   const openEditForm = (review) => {
     setEditingId(review._id);
-    // Backend se 'role' aata hai, usse hum form me 'lastName' ki tarah dikhayenge
     setFormData({ ...review, lastName: review.role });
     setImageFile(null);
     setIsFormOpen(true);
@@ -118,15 +113,14 @@ const ManageReviews = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Upload Image First
-    const imageUrl = await uploadToCloudinary();
-    if (imageFile && !imageUrl) return; // Upload fail hua to ruk jao
+    // Pehle image upload karo
+    const imageUrl = await uploadToImageKit();
+    if (imageFile && !imageUrl) return; // Agar upload fail hua to ruk jao
 
-    // Prepare Payload
     const payload = {
         ...formData,
         image: imageUrl,
-        role: formData.lastName // Role field me Last Name save kar rahe hain
+        role: formData.lastName 
     };
 
     try {
@@ -160,7 +154,6 @@ const ManageReviews = () => {
         {localItems.map((review) => (
           <div key={review._id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col relative hover:shadow-md transition-shadow">
             
-            {/* Order Input */}
             <div className="absolute top-4 right-4 flex items-center gap-1 bg-gray-50 px-2 py-1 rounded border border-gray-200">
                 <span className="text-[10px] font-bold text-gray-400 uppercase">Ord</span>
                 <input type="number" value={review.order || 0} onChange={(e) => handleOrderChange(e, review._id)} className="w-8 text-center bg-white border border-gray-300 rounded text-xs font-bold text-slate-800 focus:outline-none" />
@@ -175,7 +168,6 @@ const ManageReviews = () => {
               />
               <div>
                 <h3 className="font-bold text-slate-900">{review.name} {review.role}</h3>
-                {/* <p className="text-xs text-blue-500 font-medium">{review.role}</p> */}
               </div>
             </div>
 
@@ -226,15 +218,11 @@ const ManageReviews = () => {
                 />
               </div>
 
-              {/* ✅ IMAGE UPLOAD IN ADMIN */}
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">User Photo</label>
-                
-                {/* Show Preview if exists */}
                 {formData.image && !imageFile && (
                     <img src={formData.image} alt="Preview" className="w-16 h-16 rounded-full object-cover mb-2 border" />
                 )}
-
                 <div className="relative border border-gray-300 rounded-lg bg-white p-2 flex items-center gap-3">
                     <div className="bg-gray-100 p-2 rounded-lg"><Upload size={20} className="text-gray-500"/></div>
                     <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} className="w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
@@ -259,7 +247,7 @@ const ManageReviews = () => {
               <div className="pt-4 flex gap-4 border-t border-gray-100 mt-4">
                 <button type="button" onClick={() => setIsFormOpen(false)} className="flex-1 py-3 bg-gray-100 text-slate-700 font-bold rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
                 <button type="submit" disabled={isUploading} className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors">
-                    {isUploading ? <><Loader2 className="animate-spin" /> Uploading...</> : <><Save size={20} /> Save Review</>}
+                  {isUploading ? <><Loader2 className="animate-spin" /> Uploading...</> : <><Save size={20} /> Save Review</>}
                 </button>
               </div>
             </form>

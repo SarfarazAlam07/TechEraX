@@ -1,4 +1,5 @@
 import express from "express";
+import { protect } from "../middlewares/authMiddleware.js";
 import multer from "multer"; // ✅ Direct library import
 import { 
   createProject, 
@@ -45,6 +46,7 @@ router.get("/", getProjects);
 // ✅ CREATE ROUTE
 router.post(
     "/", 
+    protect,
     debugMiddleware,          // Step 1: Check Headers
     upload.single('image'),   // Step 2: Parse File & Text (Field name 'image' hona chahiye)
     (req, res, next) => {     // Step 3: Check if parsing worked
@@ -56,16 +58,17 @@ router.post(
     createProject             // Step 4: Final Controller
 );
 
-router.put("/reorder", updateProjectOrder);
+router.put("/reorder",protect, updateProjectOrder);
 
 // ✅ UPDATE ROUTE
 router.put(
     "/:id", 
+    protect,
     debugMiddleware,
     upload.single('image'),
     updateProject
 );
 
-router.delete("/:id", deleteProject);
+router.delete("/:id",protect, deleteProject);
 
 export default router;

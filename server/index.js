@@ -13,7 +13,7 @@ import statRoutes from './routes/statRoutes.js';
 import faqRoutes from './routes/faqRoutes.js';
 import authRoutes from './routes/authRoutes.js'
 import reviewRoutes from "./routes/reviewRoutes.js";
-
+import uploadRoutes from './routes/uploadRoutes.js';
 // Config
 dotenv.config();
 connectDB(); // Database se connect karo
@@ -26,7 +26,7 @@ app.use(cors({
   origin: "*" 
 }));
 app.use(express.json()); // JSON data padhne ke liye
-
+app.use('/api/upload', uploadRoutes);
 // --- API ROUTES ---
 app.use('/api/projects', projectRoutes);
 app.use('/api/services', serviceRoutes);
