@@ -1,123 +1,179 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Loader = () => {
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState("Initializing Systems...");
+  const [status, setStatus] = useState("Initializing Engine...");
 
-  // Progress aur Status change karne ka logic
   useEffect(() => {
     const statuses = [
-      "Initializing Systems...",
-      "Establishing Secure Link...",
-      "Compiling Modules...",
-      "Optimizing Assets...",
-      "Finalizing Build..."
+      "Initializing Engine...",
+      "Assembling Bento Grid...",
+      "Injecting Stylesheets...",
+      "Rendering UI Components...",
+      "Finalizing Build...",
     ];
 
     const timer = setInterval(() => {
       setProgress((p) => {
-        if (p >= 100) return 0; // 100 hone par wapas 0 (agar loop karna ho)
+        if (p >= 100) return 100;
         const next = p + 1;
-        
-        if (next === 20) setStatus(statuses[1]);
+        if (next === 15) setStatus(statuses[1]);
         if (next === 40) setStatus(statuses[2]);
-        if (next === 70) setStatus(statuses[3]);
+        if (next === 65) setStatus(statuses[3]);
         if (next === 90) setStatus(statuses[4]);
-        
         return next;
       });
-    }, 40); // Loader ki speed
+    }, 35);
 
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 font-sans">
-      
-      {/* 1. The Core X Animation (Jo tumhe pasand aaya) */}
-      <div className="relative flex items-center justify-center w-32 h-32">
-        {/* Outer Tech Ring */}
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#09090b] text-white overflow-hidden font-sans">
+      {/* 1. Modern Aurora / Mesh Gradient Glow */}
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          rotate: [0, 90, 0],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute w-[500px] h-[500px] bg-blue-600/20 blur-[120px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+      />
+
+      {/* 2. Glassmorphic Canvas (The Workspace) */}
+      <motion.div
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        className="relative w-64 h-72 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-2xl shadow-2xl p-5 flex flex-col gap-3 mb-12 overflow-hidden"
+      >
+        {/* Shimmer sweep effect on glass */}
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          className="absolute w-full h-full border-2 border-dashed border-cyan-500/30 rounded-full"
+          animate={{ x: ["-100%", "200%"] }}
+          transition={{
+            duration: 2.5,
+            repeat: Infinity,
+            ease: "linear",
+            repeatDelay: 1,
+          }}
+          className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 z-10 pointer-events-none"
         />
 
-        {/* Diagonal X Lines */}
-        <div className="relative flex items-center justify-center w-24 h-24">
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: '100%' }}
-            transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
-            className="absolute w-1 bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)] rotate-45"
-          />
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: '100%' }}
-            transition={{ duration: 1, delay: 0.5, repeat: Infinity, repeatType: "reverse" }}
-            className="absolute w-1 bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.8)] -rotate-45"
-          />
-        </div>
-      </div>
+        {/* UI Component Assembly (Bento Grid Style) */}
 
-      {/* 2. Brand Name & Scanline (Same as before) */}
-      <div className="mt-8 flex flex-col items-center">
-        <motion.h1 
-          animate={{ opacity: [1, 0.8, 1], scale: [1, 1.02, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-3xl font-black tracking-[0.2em] text-white uppercase"
+        {/* Header Pill */}
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5, type: "spring" }}
+          className="w-full h-8 rounded-full bg-white/5 border border-white/5 flex items-center px-3 gap-2"
         >
-          TECH<span className="text-cyan-500">ERA</span>X
-        </motion.h1>
-        
-        {/* Scanning Line */}
-        <div className="w-48 h-[2px] bg-slate-800 mt-3 overflow-hidden relative rounded-full">
-          <motion.div 
-            animate={{ x: ["-100%", "200%"] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"
-          />
-        </div>
-      </div>
+          <div className="w-4 h-4 rounded-full bg-blue-500/50" />
+          <div className="h-2 w-16 bg-white/10 rounded-full" />
+        </motion.div>
 
-      {/* 3. The Latest Dynamic Island Pill (Replacing old text) */}
-      <motion.div 
-        layout
-        className="mt-8 flex items-center gap-4 bg-white/5 border border-white/10 px-5 py-2.5 rounded-full backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-      >
-        {/* Latest Circular Spinner */}
-        <motion.svg 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="w-4 h-4 text-blue-500" 
-          viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        {/* Hero Banner Sceleton */}
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.8, type: "spring" }}
+          className="w-full h-24 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/5 relative overflow-hidden"
         >
-          <circle cx="12" cy="12" r="10" strokeWidth="3" stroke="currentColor" className="opacity-20" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 2v4m0 12v4M2 12h4m12 0h4" className="opacity-80" />
-        </motion.svg>
-        
-        {/* Changing Status Text */}
-        <span className="text-sm font-medium text-white/80 w-44 text-left">
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={status}
-              initial={{ opacity: 0, y: 5 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0, y: -5 }}
-              className="inline-block"
-            >
-              {status}
-            </motion.span>
-          </AnimatePresence>
-        </span>
+          {/* Pulsing skeleton inside hero */}
+          <motion.div
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="absolute bottom-3 left-3 w-1/2 h-3 bg-white/20 rounded-full"
+          />
+        </motion.div>
 
-        {/* Progress Percentage */}
-        <span className="text-sm font-bold text-blue-400 w-10 text-right font-mono tracking-wider">
-          {progress}%
-        </span>
+        {/* Two Column Grid */}
+        <div className="flex gap-3 flex-1">
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 1.1, type: "spring" }}
+            className="flex-1 rounded-2xl bg-white/5 border border-white/5 p-2 flex flex-col gap-2 justify-end"
+          >
+            <div className="w-full h-2 bg-white/10 rounded-full" />
+            <div className="w-2/3 h-2 bg-white/10 rounded-full" />
+          </motion.div>
+          <motion.div
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 1.3, type: "spring" }}
+            className="flex-1 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center"
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              className="w-6 h-6 border-2 border-dashed border-blue-400/50 rounded-full"
+            />
+          </motion.div>
+        </div>
       </motion.div>
 
+      {/* 3. Sleek Typography & Branding */}
+      <div className="absolute bottom-20 flex flex-col items-center">
+        <h1 className="text-3xl font-bold tracking-tight text-white/90 flex items-center gap-1">
+          TechEra
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+            X
+          </span>
+          <span className="text-blue-500 text-sm ml-1 font-mono"></span>
+        </h1>
+
+        {/* Dynamic Island style progress container */}
+        <motion.div
+          layout
+          className="mt-6 flex items-center gap-4 bg-white/5 border border-white/10 px-4 py-2 rounded-full backdrop-blur-md"
+        >
+          {/* Circular Spinner */}
+          <svg
+            className="w-4 h-4 text-blue-500 animate-spin"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              strokeWidth="3"
+              stroke="currentColor"
+              className="opacity-20"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="3"
+              d="M12 2v4m0 12v4M2 12h4m12 0h4"
+              className="opacity-80"
+            />
+          </svg>
+
+          <span className="text-xs font-medium text-white/70 w-36">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={status}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="inline-block"
+              >
+                {status}
+              </motion.span>
+            </AnimatePresence>
+          </span>
+
+          {/* Minimal Percentage */}
+          <span className="text-xs font-mono font-semibold text-blue-400 w-8 text-right">
+            {progress}%
+          </span>
+        </motion.div>
+      </div>
     </div>
   );
 };
